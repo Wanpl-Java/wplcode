@@ -1,0 +1,170 @@
+<template>
+    <div class="card" style="width: 18rem; margin-left: 20px; margin-top: 20px;">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item" style="border: 1px solid black; border-bottom: none;">
+                <div style="float: left; color: #3B5998; font-weight: 600;">
+                    → Pay attention
+                </div>
+            </li>
+            <li class="list-group-item" style="border: 1px solid black;">
+                <div style="color: #3B5998; font-weight: 600;">
+                    Before contest
+                </div>
+                <a href="#" style="color: #0000CC;">WPLCode Round 1(Div.3)</a>
+                <div style="color: #777;">2 days</div>
+                <a href="#" style="color: #0000CC; font-size: 15px;">Register now »</a>
+                <div style="color: #777; font-size: 12px;">
+                    *has extra registration
+                    <el-popover
+                        placement="bottom"
+                        :width="585"
+                        :height="30"
+                        trigger="hover"
+                        content="If you are late to register in 5 minutes before the start, you can register later during the extra registration. Extra registration opens 10 minutes after the contest starts and lasts 25 minutes."
+                    >
+                        <template #reference>
+                            <img @click="asklogo_DialogVisble = true;" src="../assets/icon1.png" style="width: 12px; margin-bottom: 10px; cursor: pointer;">
+                        </template>
+                    </el-popover>
+                    <el-dialog v-model="asklogo_DialogVisble" width="360" center>
+                        <div style="font-weight: 600;">
+                            If you are late to register in 5 minutes before the start, you can register later during the extra registration. Extra registration opens 10 minutes after the contest starts and lasts 25 minutes.
+                        </div>
+                    </el-dialog>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div v-if="jwt_token !== null" class="card" style="width: 18rem; margin-left: 20px; margin-top: 20px;">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item" style="border: 1px solid black; border-bottom: none;">
+                <div style="float: left; color: #3B5998; font-weight: 600;">
+                    → {{ user.username }}
+                </div>
+            </li>
+            <li class="list-group-item" style="border: 1px solid black;">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="flex-container">
+                                <img src="../assets/icon2.png" style="width: 20px;">
+                                <div style="font-size: 12px; margin-top: 5px; margin-left: 2px;">
+                                    Friends: 0
+                                </div>
+                            </div>
+                            <ul class="nav-links" style="float: left; font-size: 12px;">
+                                <li>
+                                    <a href="#" style="font-size: 12px; color: #0000CC; float: left;">Settings</a>
+                                </li>
+                                <li>
+                                    <a href="#" style="font-size: 12px; color: #0000CC; float: left;">Submissions</a>
+                                </li>
+                                <li>
+                                    <a href="#" style="font-size: 12px; color: #0000CC; float: left;">Talks</a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-6" style="text-align: right; vertical-align: middle;">
+                            <img src="../assets/icon3.png" style="width: 50px; margin-top: 8px;">
+                            <div style="font-size: 12px; margin-right: 5px;">
+                                photo
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="card" style="width: 18rem; margin-left: 20px; margin-top: 20px;">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item" style="border: 1px solid black; border-bottom: none;">
+                <div style="float: left; color: #3B5998; font-weight: 600;">
+                    → Top rated
+                </div>
+            </li>
+            <table class="rtable" style="border: 1px solid black; border-collapse: collapse;">
+                <tbody>
+                    <tr>
+                        <th class="left" style="width:2.25em;">#</th>
+                        <th class="">User</th>
+                        <th class="" style="width:5em;">Rating</th>
+                    </tr>
+                    <tr v-for="user in rating_top_10_users" :key="user.rank">
+                        <td>{{ user.rank }}</td>
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.rating }}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <li class="list-group-item" style="border: 1px solid black; border-top: none;">
+                <div class="flex-container">
+                    <a href="#" style="font-size: 12px; color: #0000CC;">Provinces</a>
+                    <div style="font-size: 12px; color: #0000CC;">&nbsp;|&nbsp;</div>
+                    <a href="#" style="font-size: 12px; color: #0000CC;">Cities</a>
+                    <a href="#" style="font-size: 12px; color: #0000CC; margin-left: 96px;">View all →</a>
+                </div>
+            </li>
+        </ul>
+    </div>
+</template>
+
+<script>
+import { onMounted, ref } from 'vue'
+import $ from 'jquery'
+
+export default {
+    setup() {
+        let jwt_token = ref(localStorage.getItem("wplcode_jwt_token"));
+        let user = ref(new Object());
+        const asklogo_DialogVisble = ref(false);
+
+        const rating_top_10_users = ref([]);
+
+        const refresh_topRated = () => {
+            $.ajax({
+                url: "http://localhost:3020/topRated/",
+                type: "get",
+                success(resp) {
+                    rating_top_10_users.value = resp;
+                }
+            });
+        };
+
+        refresh_topRated();
+
+        onMounted(() => {
+            if (jwt_token.value !== null) {
+                $.ajax({
+                    url: "http://localhost:3020/userinfo/",
+                    type: "get",
+                    headers: {
+                        Authorization: "Bearer " + jwt_token.value,
+                    },
+                    success(resp) {
+                        user.value = resp.user;
+                        console.log(resp);
+                    }
+                });
+            }
+        });
+
+        return {
+            jwt_token,
+            asklogo_DialogVisble,
+            rating_top_10_users,
+            user,
+            refresh_topRated,
+        }
+    }
+}
+</script>
+
+<style scoped>
+.flex-container {
+  display: flex;
+  align-items: center; 
+}
+tr, td, th {
+    border: 1px solid black;
+}
+</style>
