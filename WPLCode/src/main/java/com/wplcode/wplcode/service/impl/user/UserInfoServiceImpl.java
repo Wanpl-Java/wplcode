@@ -18,7 +18,6 @@ public class UserInfoServiceImpl implements UserInfoService {
         JSONObject resp = new JSONObject();
         UsernamePasswordAuthenticationToken authenticationToken =
                 (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
-
         UserDetailsImpl loginUser = (UserDetailsImpl) authenticationToken.getPrincipal();
         User user = loginUser.getUser();
         resp.set("user", user);

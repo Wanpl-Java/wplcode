@@ -19,4 +19,8 @@ public class User {
     private String email;
     private String photo;
     private Integer rating;
+    private Integer participation;
+    private String province;
+    private String city;
+    private Integer friends;
 }

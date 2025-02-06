@@ -64,22 +64,31 @@
                         <div class="collapse navbar-collapse" id="navbarNav">
                             <ul class="navbar-nav">
                                 <li class="nav-item">
-                                    <a class="nav-link active" aria-current="page" href="javascript:void(0)" @click="to_myhome">HOME</a>
+                                    <a v-if="route_name === 'myhome_index'" class="nav-link active" aria-current="page" href="javascript:void(0)" style="text-decoration: underline;" @click="to_myhome">HOME</a>
+                                    <a v-else-if="route_name !== 'myhome_index'" class="nav-link active" aria-current="page" href="javascript:void(0)" @click="to_myhome">HOME</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="#">CONTESTS</a>
+                                    <a v-if="route_name === 'contests_index'" class="nav-link" href="javascript:void(0)" style="text-decoration: underline;" @click="to_contests">CONTESTS</a>
+                                    <a v-else-if="route_name !== 'contests_index'" class="nav-link" href="javascript:void(0)" @click="to_contests">CONTESTS</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="#">GYM</a>
+                                    <a v-if="route_name === 'gym_index'" class="nav-link" href="javascript:void(0)" style="text-decoration: underline;" @click="to_gym">GYM</a>
+                                    <a v-else-if="route_name !== 'gym_index'" class="nav-link" href="javascript:void(0)" @click="to_gym">GYM</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="#">RATING</a>
+                                    <a v-if="route_name === 'rating_index'" class="nav-link" href="javascript:void(0)" style="text-decoration: underline;" @click="to_rating">RATING</a>
+                                    <a v-else-if="route_name !== 'rating_index'" class="nav-link" href="javascript:void(0)" @click="to_rating">RATING</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="#">HELP</a>
+                                    <a v-if="route_name === 'help_index'" class="nav-link" href="javascript:void(0)" style="text-decoration: underline;" @click="to_help">HELP</a>
+                                    <a v-else-if="route_name !== 'help_index'" class="nav-link" href="javascript:void(0)" @click="to_help">HELP</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a v-if="route_name === 'game_index'" class="nav-link" href="javascript:void(0)" style="text-decoration: underline;" @click="to_game">GAME</a>
+                                    <a v-else-if="route_name !== 'game_index'" class="nav-link" href="javascript:void(0)" @click="to_game">GAME</a>
                                 </li>
                             </ul>
-                            <input class="search" name="query" value=""> 
+                            <input class="search" name="query" value="" style="margin-left: 480px;"> 
                         </div>
                     </div>
                 </nav>
@@ -92,14 +101,69 @@
 
             </div>
             <div class="col-7">
-
+                <div v-if="route_name === 'myhome_index'" >
+                    <div class="card" style="width: 100%; margin-top: 20px; border: 1px solid black;">
+                        <div style="float: left; text-align: left; margin-left: 15px; margin-top: 10px; font-size: 20px; font-weight: 600;">
+                            Welcome to WPLCode!
+                        </div>
+                        <div style="text-align: left; margin-left: 15px;">
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Hello everyone! As the founder of WPLCode website, I believe it is very meaningful and necessary to briefly introduce myself and this website.
+                        </div>
+                        <div style="text-align: left; margin-left: 15px;">
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Firstly, regarding who am I?I am currently a third year undergraduate student at the Wuxi University and hope to work as a Java engineer. In terms of algorithms, I'm the silver medalist of the 2024 JSCPC, the third place winner of the 15th Blue Bridge Cup C++Group, and just the third place winner of the Sky Ladder Team. In engineering, I am familiar with and proficient in Java language, C, C++, Python, JavaScript and other languages, as well as more than twenty technology stacks such as Redis, RabbitMq, Jmeter, SpringBoot, SpringCloud, etc.
+                        </div>
+                        <div style="text-align: left; margin-left: 15px;">
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Secondly, regarding this WPLCode? WPLCode is a website dedicated to providing just an online evaluation system for computer programming enthusiasts. This website supports users to practice questions, participate in real-time competitions, and communicate with each other, aiming to provide users with a good and comfortable programming environment and services.
+                        </div>
+                        <div style="text-align: left; margin-left: 15px;">
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Finally, thank you for visiting and using our website (product). With your support, so our development team will have more motivation to innovate and maintain our website!
+                        </div>
+                        <div style="text-align: left; margin-left: 15px;">
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;By WPLCode_Creator------Word2vec
+                        </div>
+                        <div style="visibility: hidden; font-size: 5px;">
+                            &nbsp;
+                        </div>
+                    </div>
+                </div>
+                <div v-else-if="route_name === 'contests_index'">
+                    <ContestsIndexView />
+                </div>
+                <div v-else-if="route_name === 'gym_index'">
+                    <GymIndexView />
+                </div>
+                <div v-else-if="route_name === 'rating_index'">
+                    <RatingIndexView />
+                </div>
+                <div v-else-if="route_name === 'help_index'">
+                    <HelpIndexView />
+                </div>
+                <div v-else-if="route_name === 'game_index'">
+                    <GameIndexView />
+                </div>
+                <div v-else-if="route_name === 'provinceRating_index'">
+                    <ProvinceRatingIndexView />
+                </div>
+                <div v-else-if="route_name === 'cityRating_index'">
+                    <CityRatingIndexView />
+                </div>
+                <div v-else-if="route_name === 'settings_index'">
+                    <SettingsIndexView />
+                </div>
+                <div v-else-if="route_name === 'profile_index'">
+                    <ProfileIndexView />
+                </div>
             </div>
-            <div v-if="route_name === 'myhome_index'" class="col-3">
+            <div v-if="route_name === 'myhome_index' || route_name === 'contests_index' || route_name === 'gym_index' || route_name === 'rating_index' || route_name === 'help_index' || route_name === 'game_index' ||
+                       route_name === 'provinceRating_index' || route_name === 'cityRating_index' || route_name === 'settings_index' || route_name === 'profile_index'" class="col-3">
                 <MyhomeIndexView />
             </div>
             <div class="col-1">
 
-            </div>
+            </div> 
             <div class="col-2">
 
             </div>
@@ -124,11 +188,21 @@ import $ from 'jquery'
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { computed } from 'vue'
+import { useStore } from 'vuex'
 import router from '../router/index'
 import MyhomeIndexView from '../views/MyhomeIndexView.vue'
 import RegisterIndexView from '../views/RegisterIndexView.vue'
 import LoginIndexView from '../views/LoginIndexView.vue'
 import PasswordRecoveryIndexView from '../views/PasswordRecoveryIndexView.vue'
+import ContestsIndexView from '../views/ContestsIndexView.vue'
+import GymIndexView from '../views/GymIndexView.vue'
+import RatingIndexView from '../views/RatingIndexView.vue'
+import HelpIndexView from '../views/HelpIndexView.vue'
+import GameIndexView from '../views/GameIndexView.vue'
+import ProvinceRatingIndexView from '../views/ProvinceRatingIndexView.vue'
+import CityRatingIndexView from '../views/CityRatingIndexView.vue'
+import SettingsIndexView from '../views/SettingsIndexView.vue'
+import ProfileIndexView from '../views/ProfileIndexView.vue'
 
 export default {
     components: {
@@ -136,12 +210,22 @@ export default {
         RegisterIndexView,
         LoginIndexView,
         PasswordRecoveryIndexView,
+        ContestsIndexView,
+        GymIndexView,
+        RatingIndexView,
+        HelpIndexView,
+        GameIndexView,
+        ProvinceRatingIndexView,
+        CityRatingIndexView,
+        SettingsIndexView,
+        ProfileIndexView,
     },
     setup() {
         let jwt_token = ref(localStorage.getItem("wplcode_jwt_token"));
         let username = ref("");
 
         const route = useRoute();
+        const store = useStore();
 
         let route_name = computed(() => route.name);
 
@@ -150,11 +234,31 @@ export default {
         };
 
         const to_register = () => {
-            router.push({name: 'register_index'});
+            router.push({ name: 'register_index' });
         };
 
         const to_login = () => {
-            router.push({name: 'login_index'});
+            router.push({ name: 'login_index' });
+        };
+
+        const to_contests = () => {
+            router.push({ name: 'contests_index' });
+        }
+
+        const to_gym = () => {
+            router.push({ name: 'gym_index' });
+        };
+
+        const to_rating = () => {
+            router.push({ name: 'rating_index' });
+        };
+
+        const to_help = () => {
+            router.push({ name: 'help_index' });
+        };
+
+        const to_game = () => {
+            router.push({ name: 'game_index' });
         };
 
         const logout = () => {
@@ -164,6 +268,7 @@ export default {
 
         onMounted(() => {
             if (jwt_token.value !== null) {
+                store.commit("updateToken", jwt_token.value);
                 $.ajax({
                     url: "http://localhost:3020/userinfo/",
                     type: "get",
@@ -171,6 +276,7 @@ export default {
                         Authorization: "Bearer " + jwt_token.value,
                     },
                     success(resp) {
+                        store.commit("updateUser", resp.user);
                         username.value = resp.user.username;
                     }
                 });
@@ -185,6 +291,11 @@ export default {
             to_myhome,
             to_register,
             to_login,
+            to_contests,
+            to_gym,
+            to_rating,
+            to_help,
+            to_game,
         }
     }
 }

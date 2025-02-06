@@ -3,6 +3,15 @@ import MyhomeIndexView from '../views/MyhomeIndexView.vue'
 import RegisterIndexView from '../views/RegisterIndexView.vue'
 import LoginIndexView from '../views/LoginIndexView.vue'
 import PasswordRecoveryIndexView from '../views/PasswordRecoveryIndexView.vue'
+import ContestsIndexView from '../views/ContestsIndexView.vue'
+import GymIndexView from '../views/GymIndexView.vue'
+import RatingIndexView from '../views/RatingIndexView.vue'
+import HelpIndexView from '../views/HelpIndexView.vue'
+import GameIndexView from '../views/GameIndexView.vue'
+import ProvinceRatingIndexView from '../views/ProvinceRatingIndexView.vue'
+import CityRatingIndexView from '../views/CityRatingIndexView.vue'
+import SettingsIndexView from '../views/SettingsIndexView.vue'
+import ProfileIndexView from '../views/ProfileIndexView.vue'
 
 const routes = [
   {
@@ -41,6 +50,78 @@ const routes = [
     path: "/passwordRecovery/",
     name: "passwordRecovery_index",
     component: PasswordRecoveryIndexView,
+    meta: {
+      requestAuth: false,
+    }
+  },
+  {
+    path: "/contests/",
+    name: "contests_index",
+    component: ContestsIndexView,
+    meta: {
+      requestAuth: false,
+    }
+  },
+  {
+    path: "/gym/",
+    name: "gym_index",
+    component: GymIndexView,
+    meta: {
+      requestAuth: false,
+    }
+  },
+  {
+    path: "/rating/",
+    name: "rating_index",
+    component: RatingIndexView,
+    meta: {
+      requestAuth: false,
+    }
+  },
+  {
+    path: "/help/",
+    name: "help_index",
+    component: HelpIndexView,
+    meta: {
+      requestAuth: false,
+    }
+  },
+  {
+    path: "/game/",
+    name: "game_index",
+    component: GameIndexView,
+    meta: {
+      requestAuth: false,
+    }
+  },
+  {
+    path: "/provinceRating/",
+    name: "provinceRating_index",
+    component: ProvinceRatingIndexView,
+    meta: {
+      requestAuth: false,
+    }
+  },
+  {
+    path: "/cityRating/",
+    name: "cityRating_index",
+    component: CityRatingIndexView,
+    meta: {
+      requestAuth: false,
+    }
+  },
+  {
+    path: "/settings/",
+    name: "settings_index",
+    component: SettingsIndexView,
+    meta: {
+      requestAuth: true,
+    }
+  },
+  {
+    path: "/profile/:username/",
+    name: "profile_index",
+    component: ProfileIndexView,
     meta: {
       requestAuth: false,
     }

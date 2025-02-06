@@ -65,7 +65,7 @@ export default {
                 success(resp) {
                     if (resp.error_message === "success") {
                         alert("Register successfully!");
-                        router.push({name: 'login_index'});
+                        router.push({ name: 'login_index' });
                     } else {
                         alert(resp.error_message);
                     }

@@ -29,23 +29,54 @@ public class RegisterServiceImpl implements RegisterService {
         String confirmedPassword = userDTO.getConfirmedPassword();
         String email = userDTO.getEmail();
         String code = userDTO.getCode();
-        if (username == null || username.isEmpty()) {
+        if (username == null) {
             resp.put("error_message", "The username cannot be empty!");
             return resp;
         }
-        if (password == null || password.isEmpty()) {
+        if (password == null) {
             resp.put("error_message", "The password cannot be empty!");
             return resp;
         }
-        if (confirmedPassword == null || confirmedPassword.isEmpty()) {
+        if (confirmedPassword == null) {
             resp.put("error_message", "The confirm password cannot be empty!");
             return resp;
         }
-        if (email == null || email.isEmpty()) {
+        if (email == null) {
             resp.put("error_message", "The email cannot be empty!");
             return resp;
         }
-        if (code == null || code.isEmpty()) {
+        if (code == null) {
+            resp.put("error_message", "The verification code cannot be empty!");
+            return resp;
+        }
+
+        username = username.trim();
+        password = password.trim();
+        confirmedPassword = confirmedPassword.trim();
+        email = email.trim();
+        code = code.trim();
+
+        if (username.isEmpty()) {
+            resp.put("error_message", "The username cannot be empty!");
+            return resp;
+        }
+
+        if (password.isEmpty()) {
+            resp.put("error_message", "The password cannot be empty!");
+            return resp;
+        }
+
+        if (confirmedPassword.isEmpty()) {
+            resp.put("error_message", "The confirm password cannot be empty!");
+            return resp;
+        }
+
+        if (email.isEmpty()) {
+            resp.put("error_message", "The email cannot be empty!");
+            return resp;
+        }
+
+        if (code.isEmpty()) {
             resp.put("error_message", "The verification code cannot be empty!");
             return resp;
         }
@@ -98,7 +129,11 @@ public class RegisterServiceImpl implements RegisterService {
                 encodePassword,
                 email,
                 photo,
-                1200
+                1200,
+                0,
+                "",
+                "",
+                0
         );
         userMapper.insert(user);
         stringRedisTemplate.delete("email_code_" + email);

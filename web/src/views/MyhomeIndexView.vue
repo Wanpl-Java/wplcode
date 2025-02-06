@@ -54,7 +54,7 @@
                             </div>
                             <ul class="nav-links" style="float: left; font-size: 12px;">
                                 <li>
-                                    <a href="#" style="font-size: 12px; color: #0000CC; float: left;">Settings</a>
+                                    <a href="/settings/" style="font-size: 12px; color: #0000CC; float: left;">Settings</a>
                                 </li>
                                 <li>
                                     <a href="#" style="font-size: 12px; color: #0000CC; float: left;">Submissions</a>
@@ -65,8 +65,8 @@
                             </ul>
                         </div>
                         <div class="col-6" style="text-align: right; vertical-align: middle;">
-                            <img src="../assets/icon3.png" style="width: 50px; margin-top: 8px;">
-                            <div style="font-size: 12px; margin-right: 5px;">
+                            <img :src="user.photo" style="width: 50px; margin-top: 8px;">
+                            <div style="font-size: 12px; margin-right: 7px;">
                                 photo
                             </div>
                         </div>
@@ -91,17 +91,46 @@
                     </tr>
                     <tr v-for="user in rating_top_10_users" :key="user.rank">
                         <td>{{ user.rank }}</td>
-                        <td>{{ user.username }}</td>
+                        <td v-if="user.rating >= 3000" style="color: #FF0000;">
+                            <a @click="to_profile(user.username);" style="cursor: pointer;">
+                                {{ user.username }}
+                            </a>
+                        </td>
+                        <td v-else-if="user.rating >= 2400 && user.rating < 3000" style="color: #FF8C00;">
+                            <a @click="to_profile(user.username);" style="cursor: pointer;">
+                                {{ user.username }}
+                            </a>
+                        </td>
+                        <td v-else-if="user.rating >= 2000 && user.rating < 2400" style="color: #FFD700;">
+                            <a @click="to_profile(user.username);" style="cursor: pointer;">
+                                {{ user.username }}
+                            </a>
+                        </td>
+                        <td v-else-if="user.rating >= 1700 && user.rating < 2000" style="color: #25BB9B;">
+                            <a @click="to_profile(user.username);" style="cursor: pointer;">
+                                {{ user.username }}
+                            </a>
+                        </td>
+                        <td v-else-if="user.rating >= 1300 && user.rating < 1700" style="color: #5EA1F4;">
+                            <a @click="to_profile(user.username);" style="cursor: pointer;">
+                                {{ user.username }}
+                            </a>
+                        </td>
+                        <td v-else-if="user.rating < 1300" style="color: #C177E7;">
+                            <a @click="to_profile(user.username);" style="cursor: pointer;">
+                                {{ user.username }}
+                            </a>
+                        </td>
                         <td>{{ user.rating }}</td>
                     </tr>
                 </tbody>
             </table>
             <li class="list-group-item" style="border: 1px solid black; border-top: none;">
                 <div class="flex-container">
-                    <a href="#" style="font-size: 12px; color: #0000CC;">Provinces</a>
+                    <a href="/provinceRating/" style="font-size: 12px; color: #0000CC;">Provinces</a>
                     <div style="font-size: 12px; color: #0000CC;">&nbsp;|&nbsp;</div>
-                    <a href="#" style="font-size: 12px; color: #0000CC;">Cities</a>
-                    <a href="#" style="font-size: 12px; color: #0000CC; margin-left: 96px;">View all →</a>
+                    <a href="/cityRating/" style="font-size: 12px; color: #0000CC;">Cities</a>
+                    <a href="/rating/" style="font-size: 12px; color: #0000CC; margin-left: 96px;">View all →</a>
                 </div>
             </li>
         </ul>
@@ -111,12 +140,16 @@
 <script>
 import { onMounted, ref } from 'vue'
 import $ from 'jquery'
+import { useStore } from 'vuex'
+import router from '../router/index';
 
 export default {
     setup() {
         let jwt_token = ref(localStorage.getItem("wplcode_jwt_token"));
         let user = ref(new Object());
         const asklogo_DialogVisble = ref(false);
+
+        const store = useStore();
 
         const rating_top_10_users = ref([]);
 
@@ -132,6 +165,19 @@ export default {
 
         refresh_topRated();
 
+        const to_profile = username => {
+            store.commit("updateProfileUsername", username);
+            // localStorage.setItem("profile_username", username);
+            setTimeout(() => {
+                router.push({ 
+                    name: 'profile_index',
+                    params: {
+                        username,
+                    }
+                });
+            }, 20);
+        };
+
         onMounted(() => {
             if (jwt_token.value !== null) {
                 $.ajax({
@@ -142,6 +188,7 @@ export default {
                     },
                     success(resp) {
                         user.value = resp.user;
+                        store.commit("updateUser", resp.user);
                         console.log(resp);
                     }
                 });
@@ -154,6 +201,7 @@ export default {
             rating_top_10_users,
             user,
             refresh_topRated,
+            to_profile,
         }
     }
 }
@@ -166,5 +214,6 @@ export default {
 }
 tr, td, th {
     border: 1px solid black;
+    /*color: rgb(225, 0, 255);*/
 }
 </style>

@@ -46,7 +46,7 @@ export default {
                 success(resp) {
                     if (resp.error_message === "success") {
                         localStorage.setItem("wplcode_jwt_token", resp.wplcode_jwt_token);
-                        router.push({name: 'myhome_index'});
+                        router.push({ name: 'myhome_index' });
                         setTimeout(() => {
                             location.reload();
                         }, 5);
@@ -58,7 +58,7 @@ export default {
         };
 
         const to_passwordRecovery = () => {
-            router.push({name: "passwordRecovery_index"});
+            router.push({ name: "passwordRecovery_index" });
         };
 
         return {

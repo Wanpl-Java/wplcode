@@ -41,7 +41,9 @@ public class SecurityConfig {
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 基于token，不需要session
                 .authorizeHttpRequests((authz) -> authz
                         .requestMatchers("/login/", "/register/", "/sendVCode/",
-                                         "/passwordRecover/", "/topRated/").permitAll() // 放行api
+                                         "/passwordRecover/", "/topRated/", "/getAllRating/",
+                                         "/analyseCity/", "/analyseProvince/", "/getHelpComments/",
+                                         "/specifyInfo/").permitAll() // 放行api
                         .requestMatchers(HttpMethod.OPTIONS).permitAll()
                         .anyRequest().authenticated()
                 )
