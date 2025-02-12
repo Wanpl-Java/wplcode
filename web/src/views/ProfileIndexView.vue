@@ -2,7 +2,7 @@
     <div class="card" style="width: 100%; margin-top: 20px; border: 1px solid black;">
         <div class="container">
             <div class="row">
-                <div class="col-6">
+                <div class="col-7">
                     <img src="../assets/China.jpg" style="width: 50px; text-align: left; float: left; margin-top: 15px; margin-left: 10px;">
                     <div class="flex-container" style="margin-top: 12px;">
                         <div v-if="profile_user.rating >= 3000" style="text-align: left; font-size: 24px; font-weight: 600; color: #FF0000;">
@@ -28,7 +28,7 @@
                         </div>
                         <img src="../assets/icon8.png" style="width: 30px;">
                     </div>
-                    <div class="flex-container" style="margin-top: 10px;">
+                    <div class="flex-container" style="margin-top: 18px;">
                         <img src="../assets/icon9.png" style="width: 35px;">
                         <div style="margin-left: 5px;">
                             Contest rating:
@@ -37,7 +37,7 @@
                             {{ profile_user.rating }}
                         </div>
                     </div>
-                    <div class="flex-container" style="margin-top: 10px;">
+                    <div class="flex-container" style="margin-top: 18px;">
                         <img src="../assets/icon2.png" style="width: 35px;">
                         <div style="margin-left: 5px;">
                             Friend of:
@@ -45,6 +45,31 @@
                         <div style="margin-left: 5px; font-weight: 600;">
                             {{ profile_user.friends }}&nbsp;users
                         </div>
+                    </div>
+                    <div class="flex-container" style="margin-top: 18px;">
+                        <img src="../assets/icon10.png" style="width: 35px;">
+                        <div style="margin-left: 5px;">
+                            Visitors:
+                        </div>
+                        <div style="margin-left: 5px; font-weight: 600;">
+                            {{ visitors }}&nbsp;people
+                        </div>
+                    </div>
+                    <div class="flex-container" style="margin-top: 18px;">
+                        <img src="../assets/icon11.png" style="width: 35px;">
+                        <div style="margin-left: 5px;">
+                            Blogs:
+                        </div>
+                        <a href="javascript:void(0)" style="margin-left: 5px; font-weight: 600; color: #0000CC;">
+                            BLOGS
+                        </a>
+                    </div>
+                </div>
+                <div class="col-5">
+                    <img :src="profile_user.photo" style="width: 260px; height: 250px; border: 1px solid black; margin-top: 12px; float: right;">
+                </div> 
+                <div class="col-12">
+                    <div ref="echartsContainer" style="width: 600px; height: 400px; text-align: center;">
                     </div>
                 </div>
             </div>
@@ -56,19 +81,117 @@
 </template>
 
 <script>
+import * as echarts from 'echarts';
 import { onMounted, onUnmounted, ref, watch } from 'vue';
 import { useStore } from 'vuex'
 import $ from 'jquery'
 
 export default {
+    mounted() {
+        const store = useStore();
+        watch(() => store.state.user.profile_username, (newVal) => {
+            now_prfile_name.value = newVal;
+            setTimeout(() => {
+                $.ajax({
+                    url: "http://localhost:3020/getRTList/",
+                    type: "get",
+                    data: {
+                        username: now_prfile_name.value,
+                    },
+                    success(resp) {
+                        rating_list.value = resp.rating_list;
+                        time_list.value = resp.time_list;
+                    }
+                });
+            }, 20);
+            setTimeout(() => {
+                var myChart = echarts.init(this.$refs.echartsContainer);
+                myChart.setOption({
+                    xAxis: {
+                        type: 'category',
+                        data: time_list.value,
+                    },
+                    yAxis: {
+                        type: 'value',
+                        axisLine: {
+                            show: true,
+                            symbol: ['none', 'none'], // 轴线两端箭头，两个值，none表示没有箭头，arrow表示有箭头
+                            symbolSize: [10, 10],
+                        },
+                    },
+                    series: [
+                        {
+                            data: rating_list.value,
+                            type: 'line',
+                            label: {
+                                show: true,
+                            }
+                        }
+                    ]
+                });
+            }, 50);
+        });
+        let now_prfile_name = ref("");
+        // time_list与rating_list相对应,一个日期对应一个rating分
+        let time_list = ref(["2025-02-05", "2025-02-06", "2025-02-07"]);
+        let rating_list = ref(["1200", "1300", "1270"]);
+        for (let i = 9; i < window.location.pathname.length - 1; i ++ ) {
+            now_prfile_name.value += window.location.pathname[i];
+        }
+        setTimeout(() => {
+            $.ajax({
+                url: "http://localhost:3020/getRTList/",
+                type: "get",
+                data: {
+                    username: now_prfile_name.value,
+                },
+                success(resp) {
+                    rating_list.value = resp.rating_list;
+                    time_list.value = resp.time_list;
+                }
+            });
+        }, 20);
+
+        setTimeout(() => {
+            var myChart = echarts.init(this.$refs.echartsContainer);
+            myChart.setOption({
+                xAxis: {
+                    type: 'category',
+                    data: time_list.value,
+                },
+                yAxis: {
+                    type: 'value',
+                    axisLine: {
+                        show: true,
+                        symbol: ['none', 'none'], // 轴线两端箭头，两个值，none表示没有箭头，arrow表示有箭头
+                        symbolSize: [10, 10],
+                    },
+                },
+                series: [
+                    {
+                        data: rating_list.value,
+                        type: 'line',
+                        label: {
+                            show: true,
+                        }
+                    }
+                ]
+            });
+        }, 100);
+    },
     setup() {
         const store = useStore();
         let profile_user = ref(new Object());
         let pathName = ref("");
+        let visitors = ref(0);
 
         watch(() => store.state.user.profile_username, (newVal) => {
             // localStorage.setItem("profile_username", newVal);
-            specify_info(newVal);
+            add_pv(newVal);
+            setTimeout(() => {
+                get_pv(newVal);
+                specify_info(newVal);
+            }, 20);
         });
 
         const specify_info = profile_name => {
@@ -85,13 +208,46 @@ export default {
             });
         };
 
+        const add_pv = username => {
+            if (username == store.state.user.username) {
+                return;
+            }
+            $.ajax({
+                url: "http://localhost:3020/addPV/",
+                type: "put",
+                data: {
+                    "username": username,
+                },
+                success() {
+
+                }
+            });
+        };
+
+        const get_pv = username => {
+            $.ajax({
+                url: "http://localhost:3020/getPV/",
+                type: "get",
+                data: {
+                    "username": username,
+                },
+                success(resp) {
+                    visitors.value = resp;
+                }
+            });
+        };
+
         onMounted(() => {
             for (let i = 9; i < window.location.pathname.length - 1; i ++ ) {
                 pathName.value += window.location.pathname[i];
             }
             // let username = localStorage.getItem("profile_username");
             setTimeout(() => {
-                specify_info(pathName.value);
+                add_pv(pathName.value);
+                setTimeout(() => {
+                    get_pv(pathName.value);
+                    specify_info(pathName.value);
+                }, 20);
             }, 20);
         });
 
@@ -103,6 +259,7 @@ export default {
         return {
             profile_user,
             pathName,
+            visitors,
         }
     }
 }

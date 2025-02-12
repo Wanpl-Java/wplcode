@@ -43,7 +43,8 @@ public class SecurityConfig {
                         .requestMatchers("/login/", "/register/", "/sendVCode/",
                                          "/passwordRecover/", "/topRated/", "/getAllRating/",
                                          "/analyseCity/", "/analyseProvince/", "/getHelpComments/",
-                                         "/specifyInfo/").permitAll() // 放行api
+                                         "/specifyInfo/", "/addPV/", "/getPV/", "/getRTList/",
+                                         "/getContestsList/", "/getContestResult/").permitAll() // 放行api
                         .requestMatchers(HttpMethod.OPTIONS).permitAll()
                         .anyRequest().authenticated()
                 )

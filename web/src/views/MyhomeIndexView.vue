@@ -135,6 +135,23 @@
             </li>
         </ul>
     </div>
+    <div class="card" style="width: 18rem; margin-left: 20px; margin-top: 20px;">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item" style="border: 1px solid black; border-bottom: none;">
+                <div style="float: left; color: #3B5998; font-weight: 600;">
+                    → Find user
+                </div>
+            </li>
+            <li class="list-group-item" style="border: 1px solid black;">
+                <div style="text-align: left; margin-top: 5px;">
+                    Username:<input type="text" v-model="input_username" style="width: 150px; height: 20px; margin-left: 10px;"> 
+                </div>
+                <button @click="findUser" style="border: 1px solid black; margin-top: 10px; text-align: right; font-size: 14px; float: right; margin-right: 11px;">
+                    Find
+                </button>
+            </li>
+        </ul>
+    </div>
 </template>
 
 <script>
@@ -152,6 +169,21 @@ export default {
         const store = useStore();
 
         const rating_top_10_users = ref([]);
+
+        let input_username = ref("");
+
+        const findUser = () => {
+            store.commit("updateProfileUsername", input_username.value);
+            setTimeout(() => {
+                router.push({
+                    name: 'profile_index',
+                    params: {
+                        "username": input_username.value,
+                    }
+                });
+                input_username.value = "";
+            }, 20);
+        };
 
         const refresh_topRated = () => {
             $.ajax({
@@ -202,6 +234,8 @@ export default {
             user,
             refresh_topRated,
             to_profile,
+            input_username,
+            findUser,
         }
     }
 }

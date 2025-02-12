@@ -23,4 +23,7 @@ public class User {
     private String province;
     private String city;
     private Integer friends;
+    private Integer visitors;
+    private String ratingList;
+    private String timeList;
 }

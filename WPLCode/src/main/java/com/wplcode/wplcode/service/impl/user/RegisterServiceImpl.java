@@ -10,6 +10,8 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -123,6 +125,10 @@ public class RegisterServiceImpl implements RegisterService {
         resp.put("error_message", "success");
         String encodePassword = passwordEncoder.encode(password);
         String photo = "https://cdn.acwing.com/media/article/image/2022/08/09/1_1db2488f17-anonymous.png";
+        Date now = new Date();
+        SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd");
+        String nowTime = f.format(now);
+        nowTime += ",";
         User user = new User(
                 null,
                 username,
@@ -133,7 +139,10 @@ public class RegisterServiceImpl implements RegisterService {
                 0,
                 "",
                 "",
-                0
+                0,
+                0,
+                "1200,",
+                nowTime
         );
         userMapper.insert(user);
         stringRedisTemplate.delete("email_code_" + email);

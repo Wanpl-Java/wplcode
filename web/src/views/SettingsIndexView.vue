@@ -34,7 +34,7 @@
                     </div>
                 </div>
                 <div class="col-6">
-                    <img :src="$store.state.user.photo" style="width: 160px; height: 160px;">
+                    <img :src="$store.state.user.photo" style="width: 160px; height: 160px; border: 1px solid black;">
                     <div style="margin-top: 10px;">
                         <a href="javascript:void(0)" style="color: #0000CC; font-size: 12px; margin-top: 20px; text-decoration: none;">Change photo</a>
                     </div>

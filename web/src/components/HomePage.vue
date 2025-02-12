@@ -43,7 +43,7 @@
                     <a href="javascript:void(0)" @click="to_register" style="color: #0000CC;">Register</a>
                 </div>
                 <div v-else-if="jwt_token !== null" class="flex-container" style="margin-top: 15px; float: right;">
-                    <a href="javascript:void(0)" style="color: #0000CC;">{{ username }}</a>
+                    <a href="javascript:void(0)" @click="to_profile(username);" style="color: #0000CC;">{{ username }}</a>
                     <div style="color: #0000CC;">&nbsp;|&nbsp;</div>
                     <a href="javascript:void(0)" @click="logout" style="color: #0000CC;">Logout</a>
                 </div>
@@ -161,6 +161,9 @@
                        route_name === 'provinceRating_index' || route_name === 'cityRating_index' || route_name === 'settings_index' || route_name === 'profile_index'" class="col-3">
                 <MyhomeIndexView />
             </div>
+            <div v-else-if="route_name === 'standings_index'" class="col-3">
+
+            </div>
             <div class="col-1">
 
             </div> 
@@ -176,8 +179,14 @@
             <div v-else-if="route_name === 'passwordRecovery_index'" class="col-8">
                 <PasswordRecoveryIndexView />
             </div>
+            <div v-else-if="route_name === 'standings_index'" class="col-8">
+                <StandingsIndexView />
+            </div>
             <div class="col-2">
 
+            </div>
+            <div class="col-12" style="visibility: hidden;">
+                &nbsp;
             </div>
         </div>
     </div>
@@ -203,6 +212,7 @@ import ProvinceRatingIndexView from '../views/ProvinceRatingIndexView.vue'
 import CityRatingIndexView from '../views/CityRatingIndexView.vue'
 import SettingsIndexView from '../views/SettingsIndexView.vue'
 import ProfileIndexView from '../views/ProfileIndexView.vue'
+import StandingsIndexView from '../views/StandingsIndexView.vue'
 
 export default {
     components: {
@@ -219,6 +229,7 @@ export default {
         CityRatingIndexView,
         SettingsIndexView,
         ProfileIndexView,
+        StandingsIndexView,
     },
     setup() {
         let jwt_token = ref(localStorage.getItem("wplcode_jwt_token"));
@@ -228,6 +239,19 @@ export default {
         const store = useStore();
 
         let route_name = computed(() => route.name);
+
+        const to_profile = username => {
+            store.commit("updateProfileUsername", username);
+            // localStorage.setItem("profile_username", username);
+            setTimeout(() => {
+                router.push({ 
+                    name: 'profile_index',
+                    params: {
+                        username,
+                    }
+                });
+            }, 20);
+        };
 
         const to_myhome = () => {
             router.push({name: 'myhome_index'});
@@ -296,6 +320,7 @@ export default {
             to_rating,
             to_help,
             to_game,
+            to_profile,
         }
     }
 }

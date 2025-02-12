@@ -12,6 +12,7 @@ import ProvinceRatingIndexView from '../views/ProvinceRatingIndexView.vue'
 import CityRatingIndexView from '../views/CityRatingIndexView.vue'
 import SettingsIndexView from '../views/SettingsIndexView.vue'
 import ProfileIndexView from '../views/ProfileIndexView.vue'
+import StandingsIndexView from '../views/StandingsIndexView.vue'
 
 const routes = [
   {
@@ -122,6 +123,14 @@ const routes = [
     path: "/profile/:username/",
     name: "profile_index",
     component: ProfileIndexView,
+    meta: {
+      requestAuth: false,
+    }
+  },
+  {
+    path: "/standings/:contestId/",
+    name: "standings_index",
+    component: StandingsIndexView,
     meta: {
       requestAuth: false,
     }
