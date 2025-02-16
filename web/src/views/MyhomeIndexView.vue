@@ -10,9 +10,10 @@
                 <div style="color: #3B5998; font-weight: 600;">
                     Before contest
                 </div>
-                <a href="#" style="color: #0000CC;">WPLCode Round 1(Div.3)</a>
-                <div style="color: #777;">2 days</div>
-                <a href="#" style="color: #0000CC; font-size: 15px;">Register now »</a>
+                <a href="javascript:void(0)" @click="to_latest_contest(latest_contest.id);" style="color: #0000CC;">{{ latest_contest.name }}</a>
+                <div style="color: #777;">{{ days }} days</div>
+                <a v-if="can_register === true" href="javascript:void(0)" @click="to_latest_contest(latest_contest.id);" style="color: #0000CC; font-size: 15px;">Register now »</a>
+                <a v-else-if="can_register === false" href="/contests/" style="color: #0000CC; font-size: 15px;">To contests »</a>
                 <div style="color: #777; font-size: 12px;">
                     *has extra registration
                     <el-popover
@@ -172,6 +173,10 @@ export default {
 
         let input_username = ref("");
 
+        let latest_contest = ref(new Object());
+        let days = ref(0);
+        let can_register = ref(false);
+
         const findUser = () => {
             store.commit("updateProfileUsername", input_username.value);
             setTimeout(() => {
@@ -210,6 +215,30 @@ export default {
             }, 20);
         };
 
+        const refresh_latest_contest = () => {
+            $.ajax({
+                url: "http://localhost:3020/getLatestContest/",
+                type: "get",
+                success(resp) {
+                    latest_contest.value = resp.contest;
+                    days.value = resp.days;
+                    can_register.value = resp.msg;
+                    // console.log(resp);
+                }
+            });
+        };
+
+        refresh_latest_contest();
+
+        const to_latest_contest = contestId => {
+            router.push({
+                name: "contest_index",
+                params: {
+                    contestId,
+                }
+            })
+        };
+
         onMounted(() => {
             if (jwt_token.value !== null) {
                 $.ajax({
@@ -236,6 +265,10 @@ export default {
             to_profile,
             input_username,
             findUser,
+            latest_contest,
+            to_latest_contest,
+            days,
+            can_register,
         }
     }
 }

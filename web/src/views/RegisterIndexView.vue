@@ -1,5 +1,5 @@
 <template>
-    <div class="card" style="width: 32rem; margin-left: 400px; margin-top: 20px;">
+    <div class="card" style="width: 32rem; margin-left: 150px; margin-top: 60px;">
         <ul class="list-group list-group-flush">
             <li class="list-group-item" style="border: 1px solid black; border-bottom: none;">
                 <div style="color: #3B5998; font-weight: 600;">
@@ -84,7 +84,7 @@ export default {
                 success() {
                     has_gotVCode.value = true;
                     console.log("send message successfully!");
-                    let intervalId =  setInterval(() => {
+                    let intervalId = setInterval(() => {
                         if (left_time.value > 0) {
                             left_time.value -= 1;
                         } else {

@@ -129,6 +129,12 @@
             <version>3.17.0</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.jooq</groupId>
+            <artifactId>joor</artifactId>
+            <version>0.9.14</version>
+        </dependency>
+
     </dependencies>
 
     <build>

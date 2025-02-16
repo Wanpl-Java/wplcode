@@ -45,7 +45,8 @@ public class CreateContestServiceImpl implements CreateContestService {
                 startDate,
                 endDate,
                 registrationDate,
-                content
+                content,
+                0
         );
         contestMapper.insert(contest);
     }

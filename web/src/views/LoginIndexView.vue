@@ -1,5 +1,5 @@
 <template>
-    <div class="card" style="width: 32rem; margin-left: 400px; margin-top: 20px;">
+    <div class="card" style="width: 32rem; margin-left: 150px; margin-top: 60px;">
         <ul class="list-group list-group-flush">
             <li class="list-group-item" style="border: 1px solid black; border-bottom: none;">
                 <div style="color: #3B5998; font-weight: 600;">
@@ -46,7 +46,8 @@ export default {
                 success(resp) {
                     if (resp.error_message === "success") {
                         localStorage.setItem("wplcode_jwt_token", resp.wplcode_jwt_token);
-                        router.push({ name: 'myhome_index' });
+                        router.go(-1);
+                        // router.push({ name: 'myhome_index' });
                         setTimeout(() => {
                             location.reload();
                         }, 5);

@@ -96,6 +96,9 @@
             <div class="col-1">
                 
             </div>
+            <div v-if="route_name === 'officialContest_index'" class="col-12">
+                <OfficialContestIndexView />
+            </div>
             <!--********************************************************************************************************-->
             <div class="col-1">
 
@@ -161,7 +164,7 @@
                        route_name === 'provinceRating_index' || route_name === 'cityRating_index' || route_name === 'settings_index' || route_name === 'profile_index'" class="col-3">
                 <MyhomeIndexView />
             </div>
-            <div v-else-if="route_name === 'standings_index'" class="col-3">
+            <div v-else-if="route_name === 'standings_index' || 'contest_index'" class="col-3">
 
             </div>
             <div class="col-1">
@@ -181,6 +184,9 @@
             </div>
             <div v-else-if="route_name === 'standings_index'" class="col-8">
                 <StandingsIndexView />
+            </div>
+            <div v-else-if="route_name === 'contest_index'" class="col-8">
+                <ContestIndexView />
             </div>
             <div class="col-2">
 
@@ -213,6 +219,8 @@ import CityRatingIndexView from '../views/CityRatingIndexView.vue'
 import SettingsIndexView from '../views/SettingsIndexView.vue'
 import ProfileIndexView from '../views/ProfileIndexView.vue'
 import StandingsIndexView from '../views/StandingsIndexView.vue'
+import ContestIndexView from '../views/ContestIndexView.vue'
+import OfficialContestIndexView from '../views/OfficialContestIndexView.vue'
 
 export default {
     components: {
@@ -230,6 +238,8 @@ export default {
         SettingsIndexView,
         ProfileIndexView,
         StandingsIndexView,
+        ContestIndexView,
+        OfficialContestIndexView,
     },
     setup() {
         let jwt_token = ref(localStorage.getItem("wplcode_jwt_token"));

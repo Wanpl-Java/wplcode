@@ -13,6 +13,8 @@ import CityRatingIndexView from '../views/CityRatingIndexView.vue'
 import SettingsIndexView from '../views/SettingsIndexView.vue'
 import ProfileIndexView from '../views/ProfileIndexView.vue'
 import StandingsIndexView from '../views/StandingsIndexView.vue'
+import ContestIndexView from '../views/ContestIndexView.vue'
+import OfficialContestIndexView from '../views/OfficialContestIndexView.vue'
 
 const routes = [
   {
@@ -131,6 +133,22 @@ const routes = [
     path: "/standings/:contestId/",
     name: "standings_index",
     component: StandingsIndexView,
+    meta: {
+      requestAuth: false,
+    }
+  },
+  {
+    path: "/contest/:contestId/",
+    name: "contest_index",
+    component: ContestIndexView,
+    meta: {
+      requestAuth: false,
+    }
+  },
+  {
+    path: "/officialContest/:contestId/:topicId/",
+    name: "officialContest_index",
+    component: OfficialContestIndexView,
     meta: {
       requestAuth: false,
     }

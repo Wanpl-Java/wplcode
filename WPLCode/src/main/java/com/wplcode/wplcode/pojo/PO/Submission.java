@@ -12,17 +12,13 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Contest {
+public class Submission {
     @TableId(type = IdType.AUTO)
     private Integer id;
-    private String name;
-    private String writer;
+    private Integer contestId;
+    private String topicId;
+    private String owner;
+    private String result;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
-    private Date startTime;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
-    private Date endTime;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
-    private Date registrationTime;
-    private String content;
-    private Integer registerCounts;
+    private Date submitTime;
 }

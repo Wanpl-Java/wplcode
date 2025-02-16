@@ -45,7 +45,7 @@
                         </div>
                     </td>
                     <td>
-                        <a v-if="cou_registration_to_start_lens[cou_len_map.get(cou_contest.id)] === 'ok'" href="javascript:void(0)" style="font-size: 14px; font-weight: 600; color: white; background-color: #CC0000; background-clip: content-box;">
+                        <a v-if="cou_registration_to_start_lens[cou_len_map.get(cou_contest.id)] === 'ok'" href="javascript:void(0)" @click="to_contest_page(cou_contest.id);" style="font-size: 14px; font-weight: 600; color: white; background-color: #CC0000; background-clip: content-box;">
                             Register »
                         </a>
                         <div v-else-if="cou_registration_to_start_lens[cou_len_map.get(cou_contest.id)] !== 'ok'" style="font-size: 12px;">
@@ -419,6 +419,15 @@ export default {
 
         const value = ref(dayjs().add(1, 'month').startOf('month'));
 
+        const to_contest_page = id => {
+            router.push({
+                name: 'contest_index',
+                params: {
+                    "contestId": id,
+                },
+            })
+        };
+
         const to_final_standings = id => {
             router.push({
                 name: 'standings_index',
@@ -714,6 +723,7 @@ export default {
             past_len_map,
             value,
             to_final_standings,
+            to_contest_page,
         }
     }
 }
