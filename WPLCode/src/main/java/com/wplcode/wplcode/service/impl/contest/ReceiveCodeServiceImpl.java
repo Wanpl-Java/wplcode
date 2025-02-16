@@ -27,6 +27,7 @@ public class ReceiveCodeServiceImpl implements ReceiveCodeService {
     }
 
     private List<String> fixCode(String code) {
+        code = code.trim();
         List<String> lst = new ArrayList<>();
         UUID uuid = UUID.randomUUID();
         String uid = uuid.toString().substring(0, 8);
@@ -175,6 +176,8 @@ public class ReceiveCodeServiceImpl implements ReceiveCodeService {
             String code_result = codeInterface.getResult();
             code_result = code_result.trim();
             outputExample = outputExample.trim();
+            System.out.println("code_result = " + code_result);
+            System.out.println("outputExample = " + outputExample);
             if (outputExample.equals(code_result)) {
                 resp_result = "Accept";
             } else {

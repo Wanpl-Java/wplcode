@@ -45,7 +45,8 @@ public class SecurityConfig {
                                          "/analyseCity/", "/analyseProvince/", "/getHelpComments/",
                                          "/specifyInfo/", "/addPV/", "/getPV/", "/getRTList/",
                                          "/getContestsList/", "/getContestResult/", "/getContestInfo/",
-                                         "/getLatestContest/", "/getTopics/").permitAll() // 放行api
+                                         "/getLatestContest/", "/getTopics/", "/getSubmissions/",
+                                         "refreshRank/").permitAll() // 放行api
                         .requestMatchers(HttpMethod.OPTIONS).permitAll()
                         .anyRequest().authenticated()
                 )
