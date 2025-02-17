@@ -17,4 +17,5 @@ public class RankVO {
     private String topicC;
     private String topicD;
     private String topicE;
+    private Integer rating;
 }

@@ -14,13 +14,21 @@
             </tr>
             <tr v-for="result in results" :key="result.id">
                 <td style="text-align: center;">{{ result.rank }}</td>
-                <td style="text-align: center;">{{ result.username }}</td>
+                <td @click="to_profile(result.username);" v-if="result.rating >= 3000" style="color: #FF0000; cursor: pointer;">{{ result.username }}</td>
+                <td @click="to_profile(result.username);" v-else-if="result.rating >= 2400 && result.rating < 3000" style="color: #FF8C00; cursor: pointer;">{{ result.username }}</td>
+                <td @click="to_profile(result.username);" v-else-if="result.rating >= 2000 && result.rating < 2400" style="color: #FFD700; cursor: pointer;">{{ result.username }}</td>
+                <td @click="to_profile(result.username);" v-else-if="result.rating >= 1700 && result.rating < 2000" style="color: #25BB9B; cursor: pointer;">{{ result.username }}</td>
+                <td @click="to_profile(result.username);" v-else-if="result.rating >= 1300 && result.rating < 1700" style="color: #5EA1F4; cursor: pointer;">{{ result.username }}</td>
+                <td @click="to_profile(result.username);" v-else-if="result.rating < 1300" style="color: #C177E7; cursor: pointer;">{{ result.username }}</td>
                 <td style="text-align: center;">
                     {{ result.passCounts }}
                     <img v-if="result.passCounts === topic_len" src="../assets/icon12.png" style="width: 18px; margin-bottom: 2px;">
                 </td>
                 <td style="text-align: center;">{{ result.penalty }}</td>
-                <td v-if="topic_len >= 1 && result.username === quickests[0]" style="text-align: center; background-color: #BFE6DE;">
+                <td v-if="topic_len >= 1 && result.results.length < 1">
+
+                </td>
+                <td v-else-if="topic_len >= 1 && result.username === quickests[0]" style="text-align: center; background-color: #BFE6DE;">
                     <div v-if="result.results[0] !== -1">
                         {{ result.results[0] }}
                         <a v-if="result.failedResults[0] > 0">
@@ -53,7 +61,10 @@
                         (-{{ result.failedResults[0] }})
                     </div>
                 </td>
-                <td v-if="topic_len >= 2 && result.username === quickests[1]" style="text-align: center; background-color: #BFE6DE;">
+                <td v-if="topic_len >= 2 && result.results.length < 2">
+
+                </td>
+                <td v-else-if="topic_len >= 2 && result.username === quickests[1]" style="text-align: center; background-color: #BFE6DE;">
                     <div v-if="result.results[1] !== -1">
                         {{ result.results[1] }}
                         <a v-if="result.failedResults[1] > 0">
@@ -86,7 +97,10 @@
                         (-{{ result.failedResults[1] }})
                     </div>
                 </td>
-                <td v-if="topic_len >= 3 && result.username === quickests[2]" style="text-align: center; background-color: #BFE6DE;">
+                <td v-if="topic_len >= 3 && result.results.length < 3">
+
+                </td>
+                <td v-else-if="topic_len >= 3 && result.username === quickests[2]" style="text-align: center; background-color: #BFE6DE;">
                     <div v-if="result.results[2] !== -1">
                         {{ result.results[2] }}
                         <a v-if="result.failedResults[2] > 0">
@@ -119,7 +133,10 @@
                         (-{{ result.failedResults[2] }})
                     </div>
                 </td>
-                <td v-if="topic_len >= 4 && result.username === quickests[3]" style="text-align: center; background-color: #BFE6DE;">
+                <td v-if="topic_len >= 4 && result.results.length < 4">
+
+                </td>
+                <td v-else-if="topic_len >= 4 && result.username === quickests[3]" style="text-align: center; background-color: #BFE6DE;">
                     <div v-if="result.results[3] !== -1">
                         {{ result.results[3] }}
                         <a v-if="result.failedResults[3] > 0">
@@ -152,7 +169,10 @@
                         (-{{ result.failedResults[3] }})
                     </div>
                 </td>
-                <td v-if="topic_len >= 5 && result.username === quickests[4]" style="text-align: center; background-color: #BFE6DE;">
+                <td v-if="topic_len >= 5 && result.results.length < 5">
+
+                </td>
+                <td v-else-if="topic_len >= 5 && result.username === quickests[4]" style="text-align: center; background-color: #BFE6DE;">
                     <div v-if="result.results[4] !== -1">
                         {{ result.results[4] }}
                         <a v-if="result.failedResults[4] > 0">
@@ -193,6 +213,8 @@
 <script>
 import { onMounted, ref } from 'vue';
 import $ from 'jquery'
+import router from '../router/index';
+import { useStore } from 'vuex';
 
 export default {
     setup() {
@@ -202,6 +224,20 @@ export default {
         let topic_len = ref(0);
         // 每道题最快解题选手
         let quickests = ref(["", "", "", "", ""]);
+
+        const store = useStore();
+
+        const to_profile = username => {
+            store.commit("updateProfileUsername", username);
+            setTimeout(() => {
+                router.push({ 
+                    name: 'profile_index',
+                    params: {
+                        username,
+                    }
+                });
+            }, 20);
+        };
 
         onMounted(() => {
             for (let i = 0; i < window.location.pathname.length; i ++ ) {
@@ -226,6 +262,7 @@ export default {
                     if (resp.contestResult[0].results !== null) {
                         topic_len.value = resp.contestResult[0].results.length;
                     }
+                    // console.log(resp);
                     // console.log(results.value);
                     // console.log(quickests.value);
                 }
@@ -237,6 +274,7 @@ export default {
             results,
             topic_len,
             quickests,
+            to_profile,
         }
     }
 }

@@ -18,4 +18,5 @@ public class SubmissionVO {
     private String result;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     private Date submitTime;
+    private Long runTime;
 }

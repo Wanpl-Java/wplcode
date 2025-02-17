@@ -16,4 +16,5 @@ public class ContestResultVO {
     private List<Integer> results;
     private List<Integer> failedResults;
     private Integer passCounts;
+    private Integer rating;
 }

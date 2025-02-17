@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -32,7 +33,7 @@ public class GetContestResultServiceImpl implements GetContestResultService {
         List<ContestResultVO> resp = new ArrayList<>();
         QueryWrapper<ContestResult> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("contest_id", contestId);
-        // 罚时越少排名越靠前
+        // 过题数相同罚时越少排名越靠前
         queryWrapper.orderByAsc("penalty");
         List<ContestResult> lst = contestResultMapper.selectList(queryWrapper);
         int rank = 1;
@@ -128,9 +129,21 @@ public class GetContestResultServiceImpl implements GetContestResultService {
                     contestResult.getPenalty() / 60,
                     results,
                     failedResults,
-                    passCounts
+                    passCounts,
+                    userMapper.findByUsername(user.getUsername()).getRating()
             );
             resp.add(contestResultVO);
+        }
+        rank = 1;
+        resp.sort((o1, o2) -> {
+            if (!Objects.equals(o1.getPassCounts(), o2.getPassCounts())) {
+                return o2.getPassCounts() - o1.getPassCounts();
+            } else {
+                return o1.getPenalty()  - o2.getPenalty();
+            }
+        });
+        for (ContestResultVO contestResultVO : resp) {
+            contestResultVO.setRank(rank ++ );
         }
         jsonObject.set("contestResult", resp);
         jsonObject.set("quickest", quickest);

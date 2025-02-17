@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Rank {
+public class ContestRank {
     @TableId(type = IdType.AUTO)
     private Integer id;
     private Integer contestId;

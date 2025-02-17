@@ -3,10 +3,13 @@ package com.wplcode.wplcode.service.impl.contest;
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.wplcode.wplcode.mapper.ContestMapper;
-import com.wplcode.wplcode.mapper.RankMapper;
+import com.wplcode.wplcode.mapper.ContestRankMapper;
 import com.wplcode.wplcode.mapper.SubmissionMapper;
+import com.wplcode.wplcode.mapper.UserMapper;
 import com.wplcode.wplcode.pojo.PO.Contest;
+import com.wplcode.wplcode.pojo.PO.ContestRank;
 import com.wplcode.wplcode.pojo.PO.Submission;
+import com.wplcode.wplcode.pojo.PO.User;
 import com.wplcode.wplcode.pojo.VO.RankVO;
 import com.wplcode.wplcode.service.contest.RefreshRankService;
 import lombok.RequiredArgsConstructor;
@@ -18,9 +21,10 @@ import java.util.*;
 @RequiredArgsConstructor
 public class RefreshRankServiceImpl implements RefreshRankService {
 
-    private final RankMapper rankMapper;
+    private final ContestRankMapper contestRankMapper;
     private final SubmissionMapper submissionMapper;
     private final ContestMapper contestMapper;
+    private final UserMapper userMapper;
 
     @Override
     public JSONObject refreshRank(Map<String, String> data) {
@@ -233,6 +237,7 @@ public class RefreshRankServiceImpl implements RefreshRankService {
         int topic_len = contest.getContent().split("#").length - 1;
         for (RankVO rankVO : rankVOList) {
             rankVO.setRank(rank ++ );
+            rankVO.setRating(userMapper.findByUsername(rankVO.getUsername()).getRating());
             if (rankVO.getTopicA() != null) {
                 int tmpA = 999999;
                 if (!"".equals(rankVO.getTopicA().split("@")[0])) {
@@ -297,6 +302,40 @@ public class RefreshRankServiceImpl implements RefreshRankService {
         resp.set("ranks", rankVOList);
         resp.set("topic_len", topic_len);
         resp.set("quickest", quickest);
+        // 更新rank数据库
+        for (RankVO rankVO : rankVOList) {
+            User user = userMapper.findByUsername(rankVO.getUsername());
+            QueryWrapper<ContestRank> queryWrapper1 = new QueryWrapper<>();
+            queryWrapper1.eq("contest_id", contestId).eq("user_id", user.getId());
+            List<ContestRank> ranks = contestRankMapper.selectList(queryWrapper1);
+            if (contestRankMapper.selectCount(queryWrapper1) == 0) {
+                ContestRank newRank = new ContestRank(
+                        null,
+                        contestId,
+                        user.getId(),
+                        rankVO.getPenalty(),
+                        rankVO.getTopicA(),
+                        rankVO.getTopicB(),
+                        rankVO.getTopicC(),
+                        rankVO.getTopicD(),
+                        rankVO.getTopicE()
+                );
+                contestRankMapper.insert(newRank);
+            } else {
+                ContestRank newRank = new ContestRank(
+                        ranks.get(0).getId(),
+                        contestId,
+                        user.getId(),
+                        rankVO.getPenalty(),
+                        rankVO.getTopicA(),
+                        rankVO.getTopicB(),
+                        rankVO.getTopicC(),
+                        rankVO.getTopicD(),
+                        rankVO.getTopicE()
+                );
+                contestRankMapper.updateById(newRank);
+            }
+        }
         return resp;
     }
 }

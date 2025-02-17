@@ -1,5 +1,6 @@
 package com.wplcode.wplcode.service.impl.contest;
 
+import cn.hutool.core.date.StopWatch;
 import cn.hutool.json.JSONObject;
 import com.wplcode.wplcode.mapper.SubmissionMapper;
 import com.wplcode.wplcode.pojo.PO.Submission;
@@ -169,15 +170,18 @@ public class ReceiveCodeServiceImpl implements ReceiveCodeService {
                 "    }\n" +
                 "}";
         String resp_result = "";
+        long totalTimeMillis = 0;
+        StopWatch stopWatch = new StopWatch();
         try {
+            stopWatch.start();
             CodeInterface codeInterface = Reflect.compile(
                     "com.wplcode.wplcode.utils.Code" + uid, addUid(tmp, uid)
             ).create().get();
             String code_result = codeInterface.getResult();
             code_result = code_result.trim();
             outputExample = outputExample.trim();
-            System.out.println("code_result = " + code_result);
-            System.out.println("outputExample = " + outputExample);
+            // System.out.println("code_result = " + code_result);
+            // System.out.println("outputExample = " + outputExample);
             if (outputExample.equals(code_result)) {
                 resp_result = "Accept";
             } else {
@@ -186,6 +190,15 @@ public class ReceiveCodeServiceImpl implements ReceiveCodeService {
         } catch (Exception e) {
             resp_result = "RE or CE";
             e.printStackTrace();
+        }
+        if (!"RE or CE".equals(resp_result)) {
+            stopWatch.stop();
+            totalTimeMillis = stopWatch.getLastTaskTimeMillis();
+            if (totalTimeMillis > 2000) {
+                resp_result = "Time limit exceed";
+            }
+        } else {
+            stopWatch.stop();
         }
         // System.out.println(codeInterface.getResult());
         // System.out.println(contestId);
@@ -199,7 +212,8 @@ public class ReceiveCodeServiceImpl implements ReceiveCodeService {
                 topicId,
                 user.getUsername(),
                 resp_result,
-                new Date()
+                new Date(),
+                totalTimeMillis
         );
         submissionMapper.insert(submission);
         return resp;

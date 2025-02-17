@@ -437,6 +437,18 @@ export default {
             })
         };
 
+        const update_contest_result = () => {
+            $.ajax({
+                url: "http://localhost:3020/updateContestResult/",
+                type: "post",
+                success() {
+                    
+                }
+            })
+        };
+
+        update_contest_result();
+
         const get_format_time = time_str => {
             let year = "", month = "", day = "", hour_minute_second = "";
             let str = "";

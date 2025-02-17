@@ -13,7 +13,7 @@
                     Duration: {{ duration }}h
                 </div>
                 <div style="margin-top: 20px;">
-                    Have already registrated: {{ contest.registerCounts }} people
+                    Have already registrated: {{ register_counts }} people
                 </div>
             </div>
             <div class="col-3">
@@ -77,24 +77,38 @@
                     <td>
                         <a href="javascript:void(0)" @click="to_official_contest(topic.topicId)" style="text-decoration: none; color: #0000CC;">{{ topic.title }}</a>
                     </td>
-                    <td>0/0</td>
-                    <td>Not pass</td>
+                    <td v-if="topic.topicId === 'A'">{{ pass_rate[0].passTimes }}/{{ pass_rate[0].submitTimes }}</td>
+                    <td v-else-if="topic.topicId === 'B'">{{ pass_rate[1].passTimes }}/{{ pass_rate[1].submitTimes }}</td>
+                    <td v-else-if="topic.topicId === 'C'">{{ pass_rate[2].passTimes }}/{{ pass_rate[2].submitTimes }}</td>
+                    <td v-else-if="topic.topicId === 'D'">{{ pass_rate[3].passTimes }}/{{ pass_rate[3].submitTimes }}</td>
+                    <td v-else-if="topic.topicId === 'E'">{{ pass_rate[4].passTimes }}/{{ pass_rate[4].submitTimes }}</td>
+                    <td v-if="topic.topicId === 'A' && my_status[0] === 'Not pass'">{{ my_status[0] }}</td>
+                    <td v-else-if="topic.topicId === 'A' && my_status[0] === 'Pass'" style="color: #25BB9B;">{{ my_status[0] }}</td>
+                    <td v-else-if="topic.topicId === 'B' && my_status[1] === 'Not pass'">{{ my_status[1] }}</td>
+                    <td v-else-if="topic.topicId === 'B' && my_status[1] === 'Pass'" style="color: #25BB9B;">{{ my_status[1] }}</td>
+                    <td v-else-if="topic.topicId === 'C' && my_status[2] === 'Not pass'">{{ my_status[2] }}</td>
+                    <td v-else-if="topic.topicId === 'C' && my_status[2] === 'Pass'" style="color: #25BB9B;">{{ my_status[2] }}</td>
+                    <td v-else-if="topic.topicId === 'D' && my_status[3] === 'Not pass'">{{ my_status[3] }}</td>
+                    <td v-else-if="topic.topicId === 'D' && my_status[3] === 'Pass'" style="color: #25BB9B;">{{ my_status[3] }}</td>
+                    <td v-else-if="topic.topicId === 'E' && my_status[4] === 'Not pass'">{{ my_status[4] }}</td>
+                    <td v-else-if="topic.topicId === 'E' && my_status[4] === 'Pass'" style="color: #25BB9B;">{{ my_status[4] }}</td>
                 </tr>
             </tbody>
         </table>
         <table v-else-if="now_show === 'Submissions'" class="table">
             <thead>
-                <tr>
+                <tr style="font-size: 14px;">
                     <th scope="col">Submission id</th>
                     <th scope="col">Username</th>
                     <th scope="col">Topic id</th>
                     <th scope="col">Running result</th>
+                    <th scope="col">Run time(ms)</th>
                     <th scope="col">Use language</th>
                     <th scope="col">Submit time</th>
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="submission in submissions" :key="submission.id">
+                <tr v-for="submission in submissions" :key="submission.id" style="font-size: 14px;">
                     <th scope="row">{{ submission.id }}</th>
                     <td @click="to_profile(submission.owner);" v-if="submission.ownerRating >= 3000" style="color: #FF0000; cursor: pointer;">{{ submission.owner }}</td>
                     <td @click="to_profile(submission.owner);" v-else-if="submission.ownerRating >= 2400 && submission.ownerRating < 3000" style="color: #FF8C00; cursor: pointer;">{{ submission.owner }}</td>
@@ -105,6 +119,7 @@
                     <td>{{ submission.topicId }}</td>
                     <td v-if="submission.result === 'Accept'" style="color: #25BB9B;">{{ submission.result }}</td>
                     <td v-else-if="submission.result !== 'Accept'" style="color: #FF0000;">{{ submission.result }}</td>
+                    <td>{{ submission.runTime }}</td>
                     <td>Java</td>
                     <td>{{ submission.submitTime }}</td>
                 </tr>
@@ -112,17 +127,18 @@
         </table>
         <table v-else-if="now_show === 'MySubmissions'" class="table">
             <thead>
-                <tr>
+                <tr style="font-size: 14px;">
                     <th scope="col">Submission id</th>
                     <th scope="col">Username</th>
                     <th scope="col">Topic id</th>
                     <th scope="col">Running result</th>
+                    <th scope="col">Run time(ms)</th>
                     <th scope="col">Use language</th>
                     <th scope="col">Submit time</th>
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="submission in my_submissions" :key="submission.id">
+                <tr v-for="submission in my_submissions" :key="submission.id" style="font-size: 14px;">
                     <th scope="row">{{ submission.id }}</th>
                     <td @click="to_profile(submission.owner);" v-if="submission.ownerRating >= 3000" style="color: #FF0000; cursor: pointer;">{{ submission.owner }}</td>
                     <td @click="to_profile(submission.owner);" v-else-if="submission.ownerRating >= 2400 && submission.ownerRating < 3000" style="color: #FF8C00; cursor: pointer;">{{ submission.owner }}</td>
@@ -133,6 +149,7 @@
                     <td>{{ submission.topicId }}</td>
                     <td v-if="submission.result === 'Accept'" style="color: #25BB9B;">{{ submission.result }}</td>
                     <td v-else-if="submission.result !== 'Accept'" style="color: #FF0000;">{{ submission.result }}</td>
+                    <td>{{ submission.runTime }}</td>
                     <td>Java</td>
                     <td>{{ submission.submitTime }}</td>
                 </tr>
@@ -153,7 +170,12 @@
                 </tr>
                 <tr v-for="rank in ranks" :key="rank.id">
                     <td style="text-align: center;">{{ rank.rank }}</td>
-                    <td style="text-align: center;">{{ rank.username }}</td>
+                    <td @click="to_profile(rank.username);" v-if="rank.rating >= 3000" style="color: #FF0000; cursor: pointer;">{{ rank.username }}</td>
+                    <td @click="to_profile(rank.username);" v-else-if="rank.rating >= 2400 && rank.rating < 3000" style="color: #FF8C00; cursor: pointer;">{{ rank.username }}</td>
+                    <td @click="to_profile(rank.username);" v-else-if="rank.rating >= 2000 && rank.rating < 2400" style="color: #FFD700; cursor: pointer;">{{ rank.username }}</td>
+                    <td @click="to_profile(rank.username);" v-else-if="rank.rating >= 1700 && rank.rating < 2000" style="color: #25BB9B; cursor: pointer;">{{ rank.username }}</td>
+                    <td @click="to_profile(rank.username);" v-else-if="rank.rating >= 1300 && rank.rating < 1700" style="color: #5EA1F4; cursor: pointer;">{{ rank.username }}</td>
+                    <td @click="to_profile(rank.username);" v-else-if="rank.rating < 1300" style="color: #C177E7; cursor: pointer;">{{ rank.username }}</td>
                     <td style="text-align: center;">
                         {{ rank.passCounts }}
                         <img v-if="rank.passCounts === topic_len" src="../assets/icon12.png" style="width: 18px; margin-bottom: 2px;">
@@ -252,6 +274,40 @@
                 </tr>
             </tbody>
         </table>
+        <nav v-if="now_show === 'Submissions'" aria-label="Page navigation example">
+            <ul class="pagination pagination-sm" style="float: right;">
+                <li class="page-item" @click="click_page(-2)">
+                    <a class="page-link" href="#" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                <li :class="'page-item ' + page.is_active" v-for="page in pages" :key="page.number" @click="click_page(page.number)">
+                    <a class="page-link" href="#">{{ page.number }}</a>
+                </li>
+                <li class="page-item" @click="click_page(-1)">
+                    <a class="page-link" href="#" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        <nav v-else-if="now_show === 'MySubmissions'" aria-label="Page navigation example">
+            <ul class="pagination pagination-sm" style="float: right;">
+                <li class="page-item" @click="my_click_page(-2)">
+                    <a class="page-link" href="#" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                <li :class="'page-item ' + page.is_active" v-for="page in my_pages" :key="page.number" @click="my_click_page(page.number)">
+                    <a class="page-link" href="#">{{ page.number }}</a>
+                </li>
+                <li class="page-item" @click="my_click_page(-1)">
+                    <a class="page-link" href="#" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
     </div>
     <el-dialog v-model="lateRegister_DialogVisble" width="500" center style="margin-top: 260px;">
         <div style="text-align: center;">
@@ -282,6 +338,9 @@ export default {
         // 仅显示当前比赛当前用户的提交
         let my_submissions = ref([]);
 
+        // 当前比赛报名人数
+        let register_counts = ref(0);
+
         const store = useStore();
 
         let topics = ref([]);
@@ -310,6 +369,67 @@ export default {
         let topic_len = ref(0);
         // 每道题最快解题选手
         let quickests = ref(["", "", "", "", ""]);
+
+        // 比赛各题通过率
+        let pass_rate = ref([]);
+
+        // submissions分页
+        let current_page = 1;
+        let pages = ref([]);
+        let total_submissions = 0;
+        // my submissions分页
+        let my_current_page = 1;
+        let my_pages = ref([]);
+        let my_total_submissions = 0;
+
+        // 当前用户当前比赛过题状态
+        let my_status = ref([]);
+
+        const click_page = page => {
+            if (page === -2) page = current_page - 1;
+            else if (page === -1) page = current_page + 1;
+            let max_pages = parseInt(Math.ceil(total_submissions / 15));
+            if (page >= 1 && page <= max_pages) {
+                refresh_submissions("", "", page);
+            }
+        }
+
+        const update_pages = () => {
+            let max_pages = parseInt(Math.ceil(total_submissions / 15));
+            let new_pages = [];
+            for (let i = current_page - 2; i <= current_page + 2; i ++ ) {
+                if (i >= 1 && i <= max_pages) {
+                    new_pages.push({
+                        number: i,
+                        is_active: i === current_page ? "active" : "",
+                    });
+                }
+            }
+            pages.value = new_pages;
+        };
+
+        const my_click_page = page => {
+            if (page === -2) page = my_current_page - 1;
+            else if (page === -1) page = my_current_page + 1;
+            let max_pages = parseInt(Math.ceil(my_total_submissions / 15));
+            if (page >= 1 && page <= max_pages) {
+                refresh_submissions("", store.state.user.username, page);
+            }
+        }
+
+        const my_update_pages = () => {
+            let max_pages = parseInt(Math.ceil(my_total_submissions / 15));
+            let new_pages = [];
+            for (let i = my_current_page - 2; i <= my_current_page + 2; i ++ ) {
+                if (i >= 1 && i <= max_pages) {
+                    new_pages.push({
+                        number: i,
+                        is_active: i === my_current_page ? "active" : "",
+                    });
+                }
+            }
+            my_pages.value = new_pages;
+        };
 
         const to_topics = () => {
             now_show.value = "Topics";
@@ -379,13 +499,15 @@ export default {
                     }
                 }
                 contestId = parseInt(contestId);
+                refresh_pass_rate();
                 register_contest("false");
                 refresh_contest();
-                refresh_topics();
-                refresh_submissions("", "");
-                refresh_submissions("", store.state.user.username);
+                refresh_topics(store.state.user.username);
+                refresh_submissions("", "", current_page);
+                refresh_submissions("", store.state.user.username, my_current_page);
                 refresh_ranks();
-            }, 10);
+                refresh_register_counts();
+            }, 50);
         });
 
         // 比赛开始后报名
@@ -401,6 +523,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success() {
+                    refresh_register_counts();
                     location.reload();
                 }
             });
@@ -424,6 +547,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(resp) {
+                    refresh_register_counts();
                     if (resp.error_message === 'have registered!') {
                         have_registered.value = "true";
                     } else if (resp.error_message === 'have not registered!' && isOk === "true") {
@@ -432,6 +556,33 @@ export default {
                     } else if (resp.error_message === 'have not registered!' && isOk === "false") {
                         have_registered.value = "false";
                     }
+                }
+            });
+        };
+
+        const refresh_pass_rate = () => {
+            $.ajax({
+                url: "http://localhost:3020/getPassRate/",
+                type: "get",
+                data: {
+                    "contestId": contestId,
+                },
+                success(resp) {
+                    pass_rate.value = resp;
+                }
+            });
+        };
+
+        // 更新报名人数
+        const refresh_register_counts = () => {
+            $.ajax({
+                url: "http://localhost:3020/getRegisterCounts/",
+                type: "get",
+                data: {
+                    "contestId": contestId,
+                },
+                success(resp) {
+                    register_counts.value = resp;
                 }
             });
         };
@@ -452,7 +603,9 @@ export default {
             });
         };
 
-        const refresh_submissions = (topicId, username) => {
+        // refresh提交列表,这里需要做分页
+        const refresh_submissions = (topicId, username, page) => {
+            current_page = page;
             $.ajax({
                 url: "http://localhost:3020/getSubmissions/",
                 type: "get",
@@ -460,26 +613,33 @@ export default {
                     "contestId": contestId,
                     "topicId": topicId,
                     "username": username,
+                    "page": page,
                 },
                 success(resp) {
                     if (username === "") {
                         submissions.value = resp.submissions;
+                        total_submissions = resp.submission_counts;
+                        update_pages();
                     } else {
                         my_submissions.value = resp.submissions;
+                        my_total_submissions = resp.my_submission_counts;
+                        my_update_pages();
                     }
                 }
             });
         };
 
-        const refresh_topics = () => {
+        const refresh_topics = username => {
             $.ajax({
                 url: "http://localhost:3020/getTopics/",
                 type: "get",
                 data: {
-                    contestId,
+                    "contestId": contestId,
+                    "username": username,
                 },
                 success(resp) {
                     topics.value = resp.topics;
+                    my_status.value = resp.my_status;
                     // console.log(resp);
                 }
             });
@@ -559,6 +719,15 @@ export default {
             ranks,
             topic_len,
             quickests,
+            register_counts,
+            pass_rate,
+            current_page,
+            pages,
+            click_page,
+            my_current_page,
+            my_pages,
+            my_click_page,
+            my_status,
         }
     }
 }

@@ -1,8 +1,11 @@
 package com.wplcode.wplcode.service.impl.contest;
 
 import cn.hutool.json.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.wplcode.wplcode.mapper.ContestMapper;
+import com.wplcode.wplcode.mapper.SubmissionMapper;
 import com.wplcode.wplcode.pojo.PO.Contest;
+import com.wplcode.wplcode.pojo.PO.Submission;
 import com.wplcode.wplcode.service.contest.GetTopicsService;
 import com.wplcode.wplcode.utils.Topic;
 import lombok.RequiredArgsConstructor;
@@ -16,9 +19,10 @@ import java.util.List;
 public class GetTopicsServiceImpl implements GetTopicsService {
 
     private final ContestMapper contestMapper;
+    private final SubmissionMapper submissionMapper;
 
     @Override
-    public JSONObject getTopics(String contestId) {
+    public JSONObject getTopics(String contestId, String username) {
         JSONObject resp = new JSONObject();
         Contest contest = contestMapper.selectById(contestId);
         String content = contest.getContent();
@@ -59,6 +63,45 @@ public class GetTopicsServiceImpl implements GetTopicsService {
             }
         }
         resp.set("topics", topics);
+        List<String> my_status = new ArrayList<>();
+        String A = "Not pass", B = "Not pass", C = "Not pass", D = "Not pass", E = "Not pass";
+        QueryWrapper<Submission> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("contest_id", Integer.parseInt(contestId));
+        if (username != null && !username.isEmpty()) {
+            queryWrapper.eq("owner", username);
+            List<Submission> submissions = submissionMapper.selectList(queryWrapper);
+            for (Submission submission : submissions) {
+                String topicId = submission.getTopicId();
+                String result = submission.getResult();
+                if ("A".equals(topicId)) {
+                    if ("Accept".equals(result)) {
+                        A = "Pass";
+                    }
+                } else if ("B".equals(topicId)) {
+                    if ("Accept".equals(result)) {
+                        B = "Pass";
+                    }
+                } else if ("C".equals(topicId)) {
+                    if ("Accept".equals(result)) {
+                        C = "Pass";
+                    }
+                } else if ("D".equals(topicId)) {
+                    if ("Accept".equals(result)) {
+                        D = "Pass";
+                    }
+                } else if ("E".equals(topicId)) {
+                    if ("Accept".equals(result)) {
+                        E = "Pass";
+                    }
+                }
+            }
+        }
+        my_status.add(A);
+        my_status.add(B);
+        my_status.add(C);
+        my_status.add(D);
+        my_status.add(E);
+        resp.set("my_status", my_status);
         return resp;
     }
 }

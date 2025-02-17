@@ -16,7 +16,8 @@ public class GetSubmissionsController {
     @GetMapping("/getSubmissions/")
     public JSONObject getResults(@RequestParam(value = "contestId") String contestId,
                                  @RequestParam(value = "topicId") String topicId,
-                                 @RequestParam(value = "username") String username) {
-        return getSubmissionsService.getSubmissions(contestId, topicId, username);
+                                 @RequestParam(value = "username") String username,
+                                 @RequestParam(value = "page") Integer page) {
+        return getSubmissionsService.getSubmissions(contestId, topicId, username, page);
     }
 }

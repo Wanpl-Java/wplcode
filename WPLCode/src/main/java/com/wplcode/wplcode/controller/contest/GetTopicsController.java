@@ -14,7 +14,8 @@ public class GetTopicsController {
     private final GetTopicsService getTopicsService;
 
     @GetMapping("/getTopics/")
-    public JSONObject getTopics(@RequestParam(value = "contestId") String contestId) {
-        return getTopicsService.getTopics(contestId);
+    public JSONObject getTopics(@RequestParam(value = "contestId") String contestId,
+                                @RequestParam(value = "username") String username) {
+        return getTopicsService.getTopics(contestId, username);
     }
 }
