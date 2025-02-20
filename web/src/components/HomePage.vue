@@ -80,6 +80,10 @@
                                     <a v-else-if="route_name !== 'rating_index'" class="nav-link" href="javascript:void(0)" @click="to_rating">RATING</a>
                                 </li>
                                 <li class="nav-item">
+                                    <a v-if="route_name === 'allSubmissions_index'" class="nav-link" href="javascript:void(0)" style="text-decoration: underline;" @click="to_all_submissions">SUBMISSIONS</a>
+                                    <a v-else-if="route_name !== 'allSubmissions_index'" class="nav-link" href="javascript:void(0)" @click="to_all_submissions">SUBMISSIONS</a>
+                                </li>
+                                <li class="nav-item">
                                     <a v-if="route_name === 'help_index'" class="nav-link" href="javascript:void(0)" style="text-decoration: underline;" @click="to_help">HELP</a>
                                     <a v-else-if="route_name !== 'help_index'" class="nav-link" href="javascript:void(0)" @click="to_help">HELP</a>
                                 </li>
@@ -88,7 +92,7 @@
                                     <a v-else-if="route_name !== 'game_index'" class="nav-link" href="javascript:void(0)" @click="to_game">GAME</a>
                                 </li>
                             </ul>
-                            <input class="search" name="query" value="" style="margin-left: 480px;"> 
+                            <input class="search" name="query" value="" style="margin-left: 350px;"> 
                         </div>
                     </div>
                 </nav>
@@ -98,6 +102,9 @@
             </div>
             <div v-if="route_name === 'officialContest_index'" class="col-12">
                 <OfficialContestIndexView />
+            </div>
+            <div v-else-if="route_name === 'allSubmissions_index'" class="col-12">
+                <AllSubmissionsIndexView />
             </div>
             <!--********************************************************************************************************-->
             <div class="col-1">
@@ -221,6 +228,7 @@ import ProfileIndexView from '../views/ProfileIndexView.vue'
 import StandingsIndexView from '../views/StandingsIndexView.vue'
 import ContestIndexView from '../views/ContestIndexView.vue'
 import OfficialContestIndexView from '../views/OfficialContestIndexView.vue'
+import AllSubmissionsIndexView from '../views/AllSubmissionsIndexView.vue'
 
 export default {
     components: {
@@ -240,6 +248,7 @@ export default {
         StandingsIndexView,
         ContestIndexView,
         OfficialContestIndexView,
+        AllSubmissionsIndexView,
     },
     setup() {
         let jwt_token = ref(localStorage.getItem("wplcode_jwt_token"));
@@ -261,6 +270,20 @@ export default {
                     }
                 });
             }, 20);
+        };
+
+        const to_all_submissions = () => {
+            if (jwt_token.value === null) {
+                alert("Please login first!");
+                router.push({
+                    name: "login_index"
+                });
+                return;
+            } else {
+                router.push({
+                    name: 'allSubmissions_index'
+                });
+            }
         };
 
         const to_myhome = () => {
@@ -331,6 +354,7 @@ export default {
             to_help,
             to_game,
             to_profile,
+            to_all_submissions,
         }
     }
 }

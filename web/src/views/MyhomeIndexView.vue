@@ -58,7 +58,7 @@
                                     <a href="/settings/" style="font-size: 12px; color: #0000CC; float: left;">Settings</a>
                                 </li>
                                 <li>
-                                    <a href="#" style="font-size: 12px; color: #0000CC; float: left;">Submissions</a>
+                                    <a href="javascript:void(0)" @click="to_all_submissions();" style="font-size: 12px; color: #0000CC; float: left;">Submissions</a>
                                 </li>
                                 <li>
                                     <a href="#" style="font-size: 12px; color: #0000CC; float: left;">Talks</a>
@@ -239,6 +239,20 @@ export default {
             })
         };
 
+        const to_all_submissions = () => {
+            if (jwt_token.value === null) {
+                alert("Please login first!");
+                router.push({
+                    name: "login_index"
+                });
+                return;
+            } else {
+                router.push({
+                    name: 'allSubmissions_index'
+                });
+            }
+        };
+
         onMounted(() => {
             if (jwt_token.value !== null) {
                 $.ajax({
@@ -269,6 +283,7 @@ export default {
             to_latest_contest,
             days,
             can_register,
+            to_all_submissions,
         }
     }
 }
