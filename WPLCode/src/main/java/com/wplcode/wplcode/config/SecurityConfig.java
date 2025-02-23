@@ -46,8 +46,9 @@ public class SecurityConfig {
                                          "/specifyInfo/", "/addPV/", "/getPV/", "/getRTList/",
                                          "/getContestsList/", "/getContestResult/", "/getContestInfo/",
                                          "/getLatestContest/", "/getTopics/", "/getSubmissions/",
-                                         "refreshRank/", "/getRegisterCounts/", "/getPassRate/",
-                                         "/updateContestResult/", "/gobangAi/").permitAll() // 放行api
+                                         "/refreshRank/", "/getRegisterCounts/", "/getPassRate/",
+                                         "/updateContestResult/", "/gobangAi/", "/echartsProvince/",
+                                         "/getGymTopics/", "/searchGymTopic/").permitAll() // 放行api
                         .requestMatchers(HttpMethod.OPTIONS).permitAll()
                         .anyRequest().authenticated()
                 )

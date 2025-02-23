@@ -1070,7 +1070,7 @@ export class GobangGameMap extends AcGameObject {
                 alert("AI战胜了你!");
                 location.reload();
             }
-        }, 5000);
+        }, 850); // 目前最好780ms
     }
 
     add_listening_events() { // 用来获取用户的输入信息

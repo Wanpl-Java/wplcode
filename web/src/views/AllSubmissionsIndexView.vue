@@ -4,8 +4,8 @@
             <tr style="font-size: 14px;">
                 <th scope="col">#</th>
                 <th scope="col">When</th>
-                <th scope="col">Contest id</th>
-                <th scope="col">Problem id</th>
+                <th scope="col">Contest</th>
+                <th scope="col">Problem</th>
                 <th scope="col">Lang</th>
                 <th scope="col">Verdict</th>
                 <th scope="col">Time</th>
@@ -15,12 +15,12 @@
             <tr v-for="submission in submissions" :key="submission.id" style="font-size: 14px;">
                 <th scope="row">{{ submission.id }}</th>
                 <td>{{ submission.submitTime }}</td>
-                <td>{{ submission.contestId }}</td>
-                <td>{{ submission.topicId }}</td>
+                <td>{{ submission.contestName }}</td>
+                <td>{{ submission.topicName }}</td>
                 <td>Java</td>
                 <td v-if="submission.result === 'Accept'" style="color: #25BB9B;">{{ submission.result }}</td>
                 <td v-else-if="submission.result !== 'Accept'" style="color: #FF0000;">{{ submission.result }}</td>
-                <td>{{ submission.runTime }}</td>
+                <td>{{ submission.runTime }}ms</td>
             </tr>
         </tbody>
     </table>

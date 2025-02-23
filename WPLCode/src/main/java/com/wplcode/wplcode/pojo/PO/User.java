@@ -26,4 +26,5 @@ public class User {
     private Integer visitors;
     private String ratingList;
     private String timeList;
+    private String friendList;
 }

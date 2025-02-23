@@ -142,7 +142,8 @@ public class RegisterServiceImpl implements RegisterService {
                 0,
                 0,
                 "1200,",
-                nowTime
+                nowTime,
+                ""
         );
         userMapper.insert(user);
         stringRedisTemplate.delete("email_code_" + email);

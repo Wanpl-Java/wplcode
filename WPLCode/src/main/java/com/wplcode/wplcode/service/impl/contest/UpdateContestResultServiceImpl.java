@@ -4,16 +4,17 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.wplcode.wplcode.mapper.ContestMapper;
 import com.wplcode.wplcode.mapper.ContestRankMapper;
 import com.wplcode.wplcode.mapper.ContestResultMapper;
+import com.wplcode.wplcode.mapper.UserMapper;
 import com.wplcode.wplcode.pojo.PO.Contest;
 import com.wplcode.wplcode.pojo.PO.ContestRank;
 import com.wplcode.wplcode.pojo.PO.ContestResult;
+import com.wplcode.wplcode.pojo.PO.User;
 import com.wplcode.wplcode.service.contest.UpdateContestResultService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +23,7 @@ public class UpdateContestResultServiceImpl implements UpdateContestResultServic
     private final ContestResultMapper contestResultMapper;
     private final ContestMapper contestMapper;
     private final ContestRankMapper contestRankMapper;
+    private final UserMapper userMapper;
 
     @Override
     public void updateContestResult() {
@@ -42,7 +44,7 @@ public class UpdateContestResultServiceImpl implements UpdateContestResultServic
             rankQueryWrapper.eq("contest_id", contestId);
             List<ContestRank> contestRanks = contestRankMapper.selectList(rankQueryWrapper);
             // 当前比赛总题数
-            Integer topic_counts = contest.getContent().split("#").length - 1;
+            int topic_counts = contest.getContent().split("#").length - 1;
             for (ContestRank contestRank : contestRanks) {
                 QueryWrapper<ContestResult> resultQueryWrapper = new QueryWrapper<>();
                 resultQueryWrapper.eq("contest_id", contestId);
@@ -134,6 +136,43 @@ public class UpdateContestResultServiceImpl implements UpdateContestResultServic
                         5 // TODO 暂定参与比赛rating都+5,后续会改业务
                 );
                 contestResultMapper.updateById(contestResult);
+                // 修改user rating变化表
+                User user = userMapper.selectById(contestRank.getUserId());
+                // 判断是否需要更新
+                String nowTimeList = user.getTimeList();
+                nowTimeList = nowTimeList.split(",")[nowTimeList.split(",").length - 1];
+                String year = String.valueOf(endTime.getYear() + 1900);
+                String month = String.valueOf(endTime.getMonth() + 1);
+                String day = String.valueOf(endTime.getDate());
+                if (endTime.getMonth() + 1 < 10) {
+                    month = "0" + month;
+                }
+                if (endTime.getDate() < 10) {
+                    day = "0" + day;
+                }
+                User newUser = new User(
+                        user.getId(),
+                        user.getUsername(),
+                        user.getPassword(),
+                        user.getEmail(),
+                        user.getPhoto(),
+                        user.getRating() + 5, // TODO 同上
+                        user.getParticipation(),
+                        user.getProvince(),
+                        user.getCity(),
+                        user.getFriends(),
+                        user.getVisitors(),
+                        user.getRatingList() + (user.getRating() + 5) + ",", // TODO 同上
+                        user.getTimeList() + year + "-" + month + "-" + day + ",",
+                        user.getFriendList()
+                );
+                if (!nowTimeList.equals(year + "-" + month + "-" + day)) {
+                    System.out.println("\"info\" = " + "need update");
+                    userMapper.updateById(newUser);
+                } else {
+                    System.out.println("\"info\" = " + "not need update");
+                }
+                // System.out.println("newUser = " + newUser);
             }
         }
     }

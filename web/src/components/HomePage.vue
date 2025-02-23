@@ -138,6 +138,12 @@
                             &nbsp;
                         </div>
                     </div>
+                    <div style="font-size: 32px; margin-top: 30px; font-weight: 600;">
+                        Visualized data display for different provinces
+                    </div>
+                    <div id="china_map_box">
+                        <div id="china_map"></div>
+                    </div>
                 </div>
                 <div v-else-if="route_name === 'contests_index'">
                     <ContestsIndexView />
@@ -166,9 +172,12 @@
                 <div v-else-if="route_name === 'profile_index'">
                     <ProfileIndexView />
                 </div>
+                <div v-else-if="route_name === 'talks_index'">
+                    <TalksIndexView />
+                </div>
             </div>
             <div v-if="route_name === 'myhome_index' || route_name === 'contests_index' || route_name === 'gym_index' || route_name === 'rating_index' || route_name === 'help_index' || route_name === 'game_index' ||
-                       route_name === 'provinceRating_index' || route_name === 'cityRating_index' || route_name === 'settings_index' || route_name === 'profile_index'" class="col-3">
+                       route_name === 'provinceRating_index' || route_name === 'cityRating_index' || route_name === 'settings_index' || route_name === 'profile_index' || route_name === 'talks_index'" class="col-3">
                 <MyhomeIndexView />
             </div>
             <div v-else-if="route_name === 'standings_index' || 'contest_index'" class="col-3">
@@ -206,6 +215,8 @@
 </template>
 
 <script>
+import echarts from "echarts";
+import 'echarts/map/js/china.js';
 import $ from 'jquery'
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
@@ -229,6 +240,7 @@ import StandingsIndexView from '../views/StandingsIndexView.vue'
 import ContestIndexView from '../views/ContestIndexView.vue'
 import OfficialContestIndexView from '../views/OfficialContestIndexView.vue'
 import AllSubmissionsIndexView from '../views/AllSubmissionsIndexView.vue'
+import TalksIndexView from '../views/TalksIndexView.vue'
 
 export default {
     components: {
@@ -249,6 +261,7 @@ export default {
         ContestIndexView,
         OfficialContestIndexView,
         AllSubmissionsIndexView,
+        TalksIndexView,
     },
     setup() {
         let jwt_token = ref(localStorage.getItem("wplcode_jwt_token"));
@@ -256,6 +269,120 @@ export default {
 
         const route = useRoute();
         const store = useStore();
+
+        let echarts_info_count = ref(new Map());
+        let echarts_info_avg_rating = ref(new Map());
+
+        const init_echarts_info = () => {
+            echarts_info_count.value.set("北京", 0);
+            echarts_info_count.value.set("天津", 0);
+            echarts_info_count.value.set("上海", 0);
+            echarts_info_count.value.set("重庆", 0);
+            echarts_info_count.value.set("河北", 0);
+            echarts_info_count.value.set("河南", 0);
+            echarts_info_count.value.set("云南", 0);
+            echarts_info_count.value.set("辽宁", 0);
+            echarts_info_count.value.set("黑龙江", 0);
+            echarts_info_count.value.set("湖南", 0);
+            echarts_info_count.value.set("安徽", 0);
+            echarts_info_count.value.set("山东", 0);
+            echarts_info_count.value.set("新疆", 0);
+            echarts_info_count.value.set("江苏", 0);
+            echarts_info_count.value.set("浙江", 0);
+            echarts_info_count.value.set("江西", 0);
+            echarts_info_count.value.set("湖北", 0);
+            echarts_info_count.value.set("广西", 0);
+            echarts_info_count.value.set("甘肃", 0);
+            echarts_info_count.value.set("山西", 0);
+            echarts_info_count.value.set("内蒙古", 0);
+            echarts_info_count.value.set("陕西", 0);
+            echarts_info_count.value.set("吉林", 0);
+            echarts_info_count.value.set("福建", 0);
+            echarts_info_count.value.set("贵州", 0);
+            echarts_info_count.value.set("广东", 0);
+            echarts_info_count.value.set("青海", 0);
+            echarts_info_count.value.set("西藏", 0);
+            echarts_info_count.value.set("四川", 0);
+            echarts_info_count.value.set("宁夏", 0);
+            echarts_info_count.value.set("海南", 0);
+            echarts_info_count.value.set("台湾", 0);
+            echarts_info_count.value.set("香港", 0);
+            echarts_info_count.value.set("澳门", 0);
+            
+            echarts_info_avg_rating.value.set("北京", 0);
+            echarts_info_avg_rating.value.set("天津", 0);
+            echarts_info_avg_rating.value.set("上海", 0);
+            echarts_info_avg_rating.value.set("重庆", 0);
+            echarts_info_avg_rating.value.set("河北", 0);
+            echarts_info_avg_rating.value.set("河南", 0);
+            echarts_info_avg_rating.value.set("云南", 0);
+            echarts_info_avg_rating.value.set("辽宁", 0);
+            echarts_info_avg_rating.value.set("黑龙江", 0);
+            echarts_info_avg_rating.value.set("湖南", 0);
+            echarts_info_avg_rating.value.set("安徽", 0);
+            echarts_info_avg_rating.value.set("山东", 0);
+            echarts_info_avg_rating.value.set("新疆", 0);
+            echarts_info_avg_rating.value.set("江苏", 0);
+            echarts_info_avg_rating.value.set("浙江", 0);
+            echarts_info_avg_rating.value.set("江西", 0);
+            echarts_info_avg_rating.value.set("湖北", 0);
+            echarts_info_avg_rating.value.set("广西", 0);
+            echarts_info_avg_rating.value.set("甘肃", 0);
+            echarts_info_avg_rating.value.set("山西", 0);
+            echarts_info_avg_rating.value.set("内蒙古", 0);
+            echarts_info_avg_rating.value.set("陕西", 0);
+            echarts_info_avg_rating.value.set("吉林", 0);
+            echarts_info_avg_rating.value.set("福建", 0);
+            echarts_info_avg_rating.value.set("贵州", 0);
+            echarts_info_avg_rating.value.set("广东", 0);
+            echarts_info_avg_rating.value.set("青海", 0);
+            echarts_info_avg_rating.value.set("西藏", 0);
+            echarts_info_avg_rating.value.set("四川", 0);
+            echarts_info_avg_rating.value.set("宁夏", 0);
+            echarts_info_avg_rating.value.set("海南", 0);
+            echarts_info_avg_rating.value.set("台湾", 0);
+            echarts_info_avg_rating.value.set("香港", 0);
+            echarts_info_avg_rating.value.set("澳门", 0);
+        };
+
+        init_echarts_info();
+
+        let province_count = ref([
+            0, // 北京
+            0, // 天津
+            0, // 上海
+            0, // 重庆
+            0, // 河北
+            0, // 河南
+            0, // 云南
+            0, // 辽宁
+            0, // 黑龙江
+            0, // 湖南
+            0, // 安徽
+            0, // 山东
+            0, // 新疆
+            0, // 江苏
+            0, // 浙江
+            0, // 江西
+            0, // 湖北
+            0, // 广西
+            0, // 甘肃
+            0, // 山西
+            0, // 内蒙古
+            0, // 陕西
+            0, // 吉林
+            0, // 福建
+            0, // 贵州
+            0, // 广东
+            0, // 青海
+            0, // 西藏
+            0, // 四川
+            0, // 宁夏
+            0, // 海南
+            0, // 台湾
+            0, // 香港
+            0, // 澳门
+        ]);
 
         let route_name = computed(() => route.name);
 
@@ -324,6 +451,7 @@ export default {
         };
 
         onMounted(() => {
+            refresh_echarts_province();
             if (jwt_token.value !== null) {
                 store.commit("updateToken", jwt_token.value);
                 $.ajax({
@@ -340,7 +468,312 @@ export default {
             }
         });
 
+        const refresh_echarts_province = () => {
+            $.ajax({
+                url: "http://localhost:3020/echartsProvince/",
+                type: "get",
+                success(resp) {
+                    let obj = resp.info;
+                    for (let key in obj) {
+                        echarts_info_count.value.set(key, obj[key]["count"]);
+                        echarts_info_avg_rating.value.set(key, obj[key]["averageRating"]);
+                    }
+                    // console.log(resp.info);
+                    // echarts_info = resp.info;
+                    // province_count.value[0] = echarts_info["江苏"].count;
+                    // console.log(province_count.value[0]);
+                    // console.log(resp);
+                }
+            });
+        };
+
+        const options = {
+            tooltip: {
+                triggerOn: "mousemove",   //mousemove、click
+                padding: 8,
+                borderWidth: 1,
+                borderColor: '#409eff',
+                backgroundColor: 'rgba(255,255,255,0.7)',
+                textStyle:{
+                    color:'#000000',
+                    fontSize: 13
+                },
+                formatter: function(e) {
+                    let data = e.data;
+                    let context = `
+                        <div>
+                            <p><b style="font-size:15px;">${data.name}</b></p>
+                            <p class="tooltip_style"><span class="tooltip_left">用户数</span><span class="tooltip_right">${data.value}</span></p>
+                            <p class="tooltip_style"><span class="tooltip_left">平均Rating分</span><span class="tooltip_right">${data.avgRating}</span></p>
+                        </div>
+                    `
+                    return context;
+                }
+            },
+            visualMap: {
+                show: true,
+                left: 26,
+                bottom: 40,
+                showLabel: true,
+                pieces: [
+                    {
+                        gte: 1000,
+                        label: ">=1000",
+                        color: "#1f307b"
+                    },
+                    {
+                        gte: 100,
+                        lte: 999,
+                        label: "100 - 999",
+                        color: "#3c57ce"
+                    },
+                    {
+                        gte: 10,
+                        lte: 99,
+                        label: "10 - 99",
+                        color: "#6f83db"
+                    },
+                    {
+                        gte: 1,
+                        lte: 9,
+                        label: "1 - 9",
+                        color: "#9face7"
+                    },
+                    {
+                        lt: 1,
+                        label:'<1',
+                        color: "#bcc5ee"
+                    }
+                ]
+            },
+            geo: {
+                map: "china",
+                scaleLimit: {
+                    min: 1,
+                    max: 2
+                },
+                zoom: 1,
+                top: 120,
+                label: {
+                    normal: {
+                        show:true,
+                        fontSize: "14",
+                        color: "rgba(0,0,0,0.7)"
+                    }
+                },
+                itemStyle: {
+                    normal: {
+                        //shadowBlur: 50,
+                        //shadowColor: 'rgba(0, 0, 0, 0.2)',
+                        borderColor: "rgba(0, 0, 0, 0.2)"
+                    },
+                    emphasis: {
+                        areaColor: "#f2d5ad",
+                        shadowOffsetX: 0,
+                        shadowOffsetY: 0,
+                        borderWidth: 0
+                    }
+                }
+            },
+            series: [
+                {
+                    name: "用户分析",
+                    type: "map",
+                    geoIndex: 0,
+                    data:[]
+                }
+            ]
+        };
+
+        const dataList = ref([]);
+
+        setTimeout(() => {
+            dataList.value =  [
+            {
+                name: "南海诸岛",
+                value: 0,
+                avgRating: 0,
+            },
+            {
+                name: "北京",
+                value: 16,
+                avgRating: echarts_info_avg_rating.value.get("北京"),
+            },
+            {
+                name: "天津",
+                value: echarts_info_count.value.get("天津"),
+                avgRating: echarts_info_avg_rating.value.get("天津"),
+            },
+            {
+                name: "上海",
+                value: echarts_info_count.value.get("上海"),
+                avgRating: echarts_info_avg_rating.value.get("上海"),
+            },
+            {
+                name: "重庆",
+                value: 32,
+                avgRating: echarts_info_avg_rating.value.get("重庆"),
+            },
+            {
+                name: "河北",
+                value: 11,
+                avgRating: echarts_info_avg_rating.value.get("河北"),
+            },
+            {
+                name: "河南",
+                value: 121,
+                avgRating: echarts_info_avg_rating.value.get("河南"),
+            },
+            {
+                name: "云南",
+                value: echarts_info_count.value.get("云南"),
+                avgRating: echarts_info_avg_rating.value.get("云南"),
+            },
+            {
+                name: "辽宁",
+                value: echarts_info_count.value.get("辽宁"),
+                avgRating: echarts_info_avg_rating.value.get("辽宁"),
+            },
+            {
+                name: "黑龙江",
+                value: echarts_info_count.value.get("黑龙江"),
+                avgRating: echarts_info_avg_rating.value.get("黑龙江"),
+            },
+            {
+                name: "湖南",
+                value: echarts_info_count.value.get("湖南"),
+                avgRating: echarts_info_avg_rating.value.get("湖南"),
+            },
+            {
+                name: "安徽",
+                value: echarts_info_count.value.get("安徽"),
+                avgRating: echarts_info_avg_rating.value.get("安徽"),
+            },
+            {
+                name: "山东",
+                value: echarts_info_count.value.get("山东"),
+                avgRating: echarts_info_avg_rating.value.get("山东"),
+            },
+            {
+                name: "新疆",
+                value: echarts_info_count.value.get("新疆"),
+                avgRating: echarts_info_avg_rating.value.get("新疆"),
+            },
+            {
+                name: "江苏",
+                value: echarts_info_count.value.get("江苏"),
+                avgRating: echarts_info_avg_rating.value.get("江苏"),
+            },
+            {
+                name: "浙江",
+                value: echarts_info_count.value.get("浙江"),
+                avgRating: echarts_info_avg_rating.value.get("浙江"),
+            },
+            {
+                name: "江西",
+                value: echarts_info_count.value.get("江西"),
+                avgRating: echarts_info_avg_rating.value.get("江西"),
+            },
+            {
+                name: "湖北",
+                value: echarts_info_count.value.get("湖北"),
+                avgRating: echarts_info_avg_rating.value.get("湖北"),
+            },
+            {
+                name: "广西",
+                value: echarts_info_count.value.get("广西"),
+                avgRating: echarts_info_avg_rating.value.get("广西"),
+            },
+            {
+                name: "甘肃",
+                value: echarts_info_count.value.get("甘肃"),
+                avgRating: echarts_info_avg_rating.value.get("甘肃"),
+            },
+            {
+                name: "山西",
+                value: echarts_info_count.value.get("山西"),
+                avgRating: echarts_info_avg_rating.value.get("山西"),
+            },
+            {
+                name: "内蒙古",
+                value: echarts_info_count.value.get("内蒙古"),
+                avgRating: echarts_info_avg_rating.value.get("内蒙古"),
+            },
+            {
+                name: "陕西",
+                value: echarts_info_count.value.get("陕西"),
+                avgRating: echarts_info_avg_rating.value.get("陕西"),
+            },
+            {
+                name: "吉林",
+                value: echarts_info_count.value.get("吉林"),
+                avgRating: echarts_info_avg_rating.value.get("吉林"),
+            },
+            {
+                name: "福建",
+                value: echarts_info_count.value.get("福建"),
+                avgRating: echarts_info_avg_rating.value.get("福建"),
+            },
+            {
+                name: "贵州",
+                value: echarts_info_count.value.get("贵州"),
+                avgRating: echarts_info_avg_rating.value.get("贵州"),
+            },
+            {
+                name: "广东",
+                value: echarts_info_count.value.get("广东"),
+                avgRating: echarts_info_avg_rating.value.get("广东"),
+            },
+            {
+                name: "青海",
+                value: 101,
+                avgRating: echarts_info_avg_rating.value.get("青海"),
+            },
+            {
+                name: "西藏",
+                value: echarts_info_count.value.get("西藏"),
+                avgRating: echarts_info_avg_rating.value.get("西藏"),
+            },
+            {
+                name: "四川",
+                value: echarts_info_count.value.get("四川"),
+                avgRating: echarts_info_avg_rating.value.get("四川"),
+            },
+            {
+                name: "宁夏",
+                value: echarts_info_count.value.get("宁夏"),
+                avgRating: echarts_info_avg_rating.value.get("宁夏"),
+            },
+            {
+                name: "海南",
+                value: echarts_info_count.value.get("海南"),
+                avgRating: echarts_info_avg_rating.value.get("海南"),
+            },
+            {
+                name: "台湾",
+                value: echarts_info_count.value.get("台湾"),
+                avgRating: echarts_info_avg_rating.value.get("台湾"),
+            },
+            {
+                name: "香港",
+                value: echarts_info_count.value.get("香港"),
+                avgRating: echarts_info_avg_rating.value.get("香港"),
+            },
+            {
+                name: "澳门",
+                value: echarts_info_count.value.get("澳门"),
+                avgRating: echarts_info_avg_rating.value.get("澳门"),
+            }
+        ];
+        }, 30);
+        
+
         return {
+            province_count,
+            echarts_info_count,
+            echarts_info_avg_rating,
+            options,
+            dataList,
             jwt_token,
             username,
             logout,
@@ -356,6 +789,32 @@ export default {
             to_profile,
             to_all_submissions,
         }
+    },
+    methods: {
+        //初始化中国地图
+        initEchartMap() {
+            setTimeout(() => {
+                let mapDiv = document.getElementById('china_map');
+                if (mapDiv) {
+                    let myChart = echarts.init(mapDiv);
+                    myChart.setOption(this.options);
+                }
+            }, 30);
+        },
+        //修改echart配制
+        setEchartOption(){
+            this.options.series[0]['data'] = this.dataList;
+        }
+    },
+    created() {
+        setTimeout(() => {
+            this.setEchartOption();
+        }, 30) ;
+    },
+    mounted() {
+        this.$nextTick(() => {
+            this.initEchartMap();
+        })
     }
 }
 </script>
@@ -381,5 +840,30 @@ export default {
 }
 tr, td, th {
     border: 1px solid black;
+}
+#china_map_box {
+    height: 0px;
+    position: relative;
+}
+#china_map_box #china_map{
+    height: 620px;
+}
+#china_map_box .china_map_logo{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 45px;
+}
+</style>
+<style>
+#china_map .tooltip_style{
+    line-height: 1.7;
+    overflow: hidden;
+}
+#china_map .tooltip_left{
+    float: left;
+}
+#china_map .tooltip_right{
+    float: right;
 }
 </style>

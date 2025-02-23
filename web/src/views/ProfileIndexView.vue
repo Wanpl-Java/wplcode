@@ -26,7 +26,8 @@
                         <div style="font-size: 16px; margin-left: 10px;">
                             from&nbsp;{{ profile_user.province }}&nbsp;{{ profile_user.city }}
                         </div>
-                        <img src="../assets/icon8.png" style="width: 30px;">
+                        <img v-if="is_friend === false" @click="add_friend();" src="../assets/icon8.png" style="width: 28px; height: 23.5px; cursor: pointer; margin-left: 1px; margin-top: 2px;">
+                        <img v-else-if="is_friend === true" @click="remove_friend();" src="../assets/icon2.png" style="width: 30px; height: 26px; cursor: pointer; margin-bottom: 1px;">
                     </div>
                     <div class="flex-container" style="margin-top: 18px;">
                         <img src="../assets/icon9.png" style="width: 35px;">
@@ -185,14 +186,68 @@ export default {
         let pathName = ref("");
         let visitors = ref(0);
 
+        let is_friend = ref(false); // 判断此人是否为自己的friend
+
         watch(() => store.state.user.profile_username, (newVal) => {
             // localStorage.setItem("profile_username", newVal);
             add_pv(newVal);
             setTimeout(() => {
                 get_pv(newVal);
                 specify_info(newVal);
+                check_is_friend();
+                location.reload();
             }, 20);
         });
+
+        const add_friend = () => {
+            $.ajax({
+                url: "http://localhost:3020/addFriend/",
+                type: "put",
+                data: {
+                    "username": pathName.value,
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                success() {
+                    is_friend.value = true;
+                },
+            });
+        };
+
+        const remove_friend = () => {
+            $.ajax({
+                url: "http://localhost:3020/removeFriend/",
+                type: "put",
+                data: {
+                    "username": pathName.value,
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                success() {
+                    is_friend.value = false;
+                },
+            });
+        };
+
+        const check_is_friend = () => {
+            $.ajax({
+                url: "http://localhost:3020/checkIsFriend/",
+                type: "get",
+                data: {
+                    "username": pathName.value,
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                success(resp) {
+                    if (resp === true) {
+                        is_friend.value = true;
+                    }
+                },
+            });
+        };
 
         const specify_info = profile_name => {
             $.ajax({
@@ -247,6 +302,7 @@ export default {
                 setTimeout(() => {
                     get_pv(pathName.value);
                     specify_info(pathName.value);
+                    check_is_friend();
                 }, 20);
             }, 20);
         });
@@ -260,6 +316,9 @@ export default {
             profile_user,
             pathName,
             visitors,
+            add_friend,
+            is_friend,
+            remove_friend,
         }
     }
 }

@@ -50,7 +50,7 @@
                             <div class="flex-container">
                                 <img src="../assets/icon2.png" style="width: 20px;">
                                 <div style="font-size: 12px; margin-top: 5px; margin-left: 2px;">
-                                    Friends: 0
+                                    Friends: {{ user.friends }}
                                 </div>
                             </div>
                             <ul class="nav-links" style="float: left; font-size: 12px;">
@@ -61,7 +61,7 @@
                                     <a href="javascript:void(0)" @click="to_all_submissions();" style="font-size: 12px; color: #0000CC; float: left;">Submissions</a>
                                 </li>
                                 <li>
-                                    <a href="#" style="font-size: 12px; color: #0000CC; float: left;">Talks</a>
+                                    <a href="javascript:void(0)" @click="to_talks();" style="font-size: 12px; color: #0000CC; float: left;">Talks</a>
                                 </li>
                             </ul>
                         </div>
@@ -253,6 +253,12 @@ export default {
             }
         };
 
+        const to_talks = () => {
+            router.push({
+                name: 'talks_index'
+            });
+        };
+
         onMounted(() => {
             if (jwt_token.value !== null) {
                 $.ajax({
@@ -284,6 +290,7 @@ export default {
             days,
             can_register,
             to_all_submissions,
+            to_talks,
         }
     }
 }

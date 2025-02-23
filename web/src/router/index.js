@@ -16,6 +16,8 @@ import StandingsIndexView from '../views/StandingsIndexView.vue'
 import ContestIndexView from '../views/ContestIndexView.vue'
 import OfficialContestIndexView from '../views/OfficialContestIndexView.vue'
 import AllSubmissionsIndexView from '../views/AllSubmissionsIndexView.vue'
+import TestIndexView from '../utils/TestIndexView.vue'
+import TalksIndexView from '../views/TalksIndexView.vue'
 
 const routes = [
   {
@@ -158,6 +160,22 @@ const routes = [
     path: "/allSubmissions/",
     name: "allSubmissions_index",
     component: AllSubmissionsIndexView,
+    meta: {
+      requestAuth: true,
+    }
+  },
+  {
+    path: "/test/",
+    name: "test_index",
+    component: TestIndexView,
+    meta: {
+      requestAuth: false,
+    }
+  },
+  {
+    path: "/talks/",
+    name: "talks_index",
+    component: TalksIndexView,
     meta: {
       requestAuth: true,
     }
