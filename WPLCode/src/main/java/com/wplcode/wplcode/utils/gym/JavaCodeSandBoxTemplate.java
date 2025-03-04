@@ -16,7 +16,7 @@ import java.util.UUID;
 public class JavaCodeSandBoxTemplate {
     private static final String GLOBAL_CODE_DIR_PATH = "src/main/java/com/wplcode/wplcode/files";
     private static String GLOBAL_JAVA_CLASS_NAME = "Main.java";
-    private static final long TIME_OUT = 10000L;
+    private static final long TIME_OUT = 20000L;
     private static final Logger log = LoggerFactory.getLogger(JavaCodeSandBoxTemplate.class);
 
     public File saveCodeToFile(String code){
@@ -168,6 +168,16 @@ public class JavaCodeSandBoxTemplate {
             String code = executeCodeRequest.getCode();
             if ("Java".equals(language)) {
                 GLOBAL_JAVA_CLASS_NAME = "Main" + get_tmp + ".java";
+                userCodeFile = saveCodeToFile(code);
+
+                ExecuteMessage executeMessage = compileFile(userCodeFile);
+                System.out.println("executeMessage = " + executeMessage);
+                List<ExecuteMessage> executeMessages = runCode(inputList,userCodeFile,TIME_OUT, language);
+                executeCodeResponse = getOutputResponse(executeMessages);
+                boolean doDelete = doDelete(userCodeFile);
+                if (!doDelete) {
+                    log.error("delete file error,userCodeFilePath = {}",userCodeFile.getAbsolutePath());
+                }
             } else if ("C++".equals(language)) {
                 try {
                     System.err.println(language);
@@ -186,18 +196,23 @@ public class JavaCodeSandBoxTemplate {
 
                 }
             } else if ("Python".equals(language)) {
-                System.err.println(language);
-                return null;
-            }
-            userCodeFile = saveCodeToFile(code);
-
-            ExecuteMessage executeMessage = compileFile(userCodeFile);
-            System.out.println("executeMessage = " + executeMessage);
-            List<ExecuteMessage> executeMessages = runCode(inputList,userCodeFile,TIME_OUT, language);
-            executeCodeResponse = getOutputResponse(executeMessages);
-            boolean doDelete = doDelete(userCodeFile);
-            if (!doDelete) {
-                log.error("delete file error,userCodeFilePath = {}",userCodeFile.getAbsolutePath());
+                // TODO 保存Python代码
+                File file_1 = FileUtil.writeString(inputList.get(1), "E:\\wplcode\\wplcode\\src\\main\\java\\com\\wplcode\\wplcode\\files\\python\\input.txt", StandardCharsets.UTF_8);
+                File file_2 = FileUtil.writeString(code, "E:\\wplcode\\wplcode\\src\\main\\java\\com\\wplcode\\wplcode\\files\\python\\code.py", StandardCharsets.UTF_8);
+                List<ExecuteMessage> executeMessages = runCode(inputList, null, TIME_OUT, language);
+                doDelete(file_1);
+                doDelete(file_2);
+                executeCodeResponse = getOutputResponse(executeMessages);
+                return executeCodeResponse;
+            } else if ("Go".equals(language)) {
+                // TODO 保存Go代码
+                File file_1 = FileUtil.writeString(inputList.get(1), "E:\\wplcode\\wplcode\\src\\main\\java\\com\\wplcode\\wplcode\\files\\go\\input.txt", StandardCharsets.UTF_8);
+                File file_2 = FileUtil.writeString(code, "E:\\wplcode\\wplcode\\src\\main\\java\\com\\wplcode\\wplcode\\files\\go\\code.go", StandardCharsets.UTF_8);
+                List<ExecuteMessage> executeMessages = runCode(inputList, null, TIME_OUT, language);
+                doDelete(file_1);
+                doDelete(file_2);
+                executeCodeResponse = getOutputResponse(executeMessages);
+                return executeCodeResponse;
             }
         } catch (Exception e) {
             System.err.println("ERR");

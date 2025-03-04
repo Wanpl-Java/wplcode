@@ -86,6 +86,7 @@ import * as echarts from 'echarts';
 import { onMounted, onUnmounted, ref, watch } from 'vue';
 import { useStore } from 'vuex'
 import $ from 'jquery'
+import router from '../router/index';
 
 export default {
     mounted() {
@@ -200,35 +201,53 @@ export default {
         });
 
         const add_friend = () => {
-            $.ajax({
-                url: "http://localhost:3020/addFriend/",
-                type: "put",
-                data: {
-                    "username": pathName.value,
-                },
-                headers: {
-                    Authorization: "Bearer " + store.state.user.token,
-                },
-                success() {
-                    is_friend.value = true;
-                },
-            });
+            if (store.state.user.token === null || store.state.user.token === '') {
+                alert("Please login first!");
+                router.push({
+                    name: 'login_index',
+                });
+                return;
+            }
+            setTimeout(() => {
+                $.ajax({
+                    url: "http://localhost:3020/addFriend/",
+                    type: "put",
+                    data: {
+                        "username": pathName.value,
+                    },
+                    headers: {
+                        Authorization: "Bearer " + store.state.user.token,
+                    },
+                    success() {
+                        is_friend.value = true;
+                    },
+                });
+            }, 10);
         };
 
         const remove_friend = () => {
-            $.ajax({
-                url: "http://localhost:3020/removeFriend/",
-                type: "put",
-                data: {
-                    "username": pathName.value,
-                },
-                headers: {
-                    Authorization: "Bearer " + store.state.user.token,
-                },
-                success() {
-                    is_friend.value = false;
-                },
-            });
+            if (store.state.user.token === null || store.state.user.token === '') {
+                alert("Please login first!");
+                router.push({
+                    name: 'login_index',
+                });
+                return;
+            }
+            setTimeout(() => {
+                $.ajax({
+                    url: "http://localhost:3020/removeFriend/",
+                    type: "put",
+                    data: {
+                        "username": pathName.value,
+                    },
+                    headers: {
+                        Authorization: "Bearer " + store.state.user.token,
+                    },
+                    success() {
+                        is_friend.value = false;
+                    },
+                });
+            }, 10);
         };
 
         const check_is_friend = () => {

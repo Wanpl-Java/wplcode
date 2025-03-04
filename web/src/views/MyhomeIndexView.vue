@@ -178,16 +178,29 @@ export default {
         let can_register = ref(false);
 
         const findUser = () => {
-            store.commit("updateProfileUsername", input_username.value);
-            setTimeout(() => {
-                router.push({
-                    name: 'profile_index',
-                    params: {
-                        "username": input_username.value,
+            // 为防止影响用户好的体验，判断查询的用户是否存在，如果不存在直接提示用户相关信息并return
+            $.ajax({
+                url: "http://localhost:3020/findUserExist/",
+                type: "get",
+                data: {
+                    "username": input_username.value,
+                },
+                success(resp) {
+                    if (resp.error_message === 'success') {
+                        store.commit("updateProfileUsername", input_username.value);
+                        router.push({
+                            name: 'profile_index',
+                            params: {
+                                "username": input_username.value,
+                            }
+                        });
+                        input_username.value = "";
+                    } else {
+                        alert("The user who you searched is not exist!");
+                        input_username.value = "";
                     }
-                });
-                input_username.value = "";
-            }, 20);
+                }
+            });
         };
 
         const refresh_topRated = () => {

@@ -37,6 +37,8 @@
 import { ref } from 'vue'
 import $ from 'jquery';
 import router from '../router/index'
+import { useRoute } from 'vue-router'
+import { computed } from 'vue'
 
 export default {
     setup() {
@@ -48,6 +50,19 @@ export default {
 
         let has_gotVCode = ref(false);
         let left_time = ref(600); // 10min
+
+        const route = useRoute();
+
+        let route_name = computed(() => route.name);
+
+        document.addEventListener("keydown", function(event) {
+            // 判断按下的键是否是回车键（键码为13）
+            if(event.key === 'Enter' && route_name.value === 'register_index') {
+                // 执行相应的操作，例如提交表单或执行搜索功能
+                register();
+                return;
+            }
+        });
 
         const register = () => {
             $.ajax({

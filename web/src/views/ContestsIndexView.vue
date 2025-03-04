@@ -615,6 +615,13 @@ export default {
         };
 
         const create_contest = () => {
+            if (store.state.user.token === null || store.state.user.token === '') {
+                alert("Please login first!");
+                router.push({
+                    name: 'login_index',
+                });
+                return;
+            }
             let now_time = new Date();
             let start_time = contest_time.value[0];
             let end_time = contest_time.value[1];

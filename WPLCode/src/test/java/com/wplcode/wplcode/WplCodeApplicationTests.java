@@ -585,4 +585,27 @@ class WplCodeApplicationTests {
     public void saveCppFileToLocal() {
         FileUtil.writeString("1 2", "E:\\wplcode\\wplcode\\src\\main\\java\\com\\wplcode\\wplcode\\files\\cpp\\input.txt", StandardCharsets.UTF_8);
     }
+
+    @Test
+    public void testPython() throws JSchException, IOException, InterruptedException {
+        String code = "a, b = map(int, input().split())\n" +
+                "print(a + b)";
+        System.out.println(code);
+        JavaDockerCodeSandBox.main(code, "Python", "3 7");
+    }
+
+    @Test
+    public void testGo() throws JSchException, IOException, InterruptedException {
+        String code = "package main\n" +
+                "\n" +
+                "import \"fmt\"\n" +
+                "\n" +
+                "func main() {\n" +
+                "    var a, b int\n" +
+                "    fmt.Scanf(\"%d%d\", &a, &b)\n" +
+                "    fmt.Println(a+b)\n" +
+                "}";
+        System.out.println(code);
+        JavaDockerCodeSandBox.main(code, "Go", "3 7");
+    }
 }

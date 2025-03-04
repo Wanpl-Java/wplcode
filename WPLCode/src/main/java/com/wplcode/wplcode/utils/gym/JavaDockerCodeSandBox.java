@@ -38,7 +38,7 @@ public class JavaDockerCodeSandBox extends JavaCodeSandBoxTemplate {
         for (int i = 0; i < code.length(); i ++ ) {
             // a=1
             if (i < code.length() - 1) {
-                if (code.charAt(i) != ' ' && code.charAt(i) != '=' && code.charAt(i + 1) == '=' || code.charAt(i) == '=' && code.charAt(i + 1) != ' ' && code.charAt(i + 1) != '=') {
+                if (code.charAt(i) != ' ' && code.charAt(i) != '=' && code.charAt(i) != '>' && code.charAt(i) != '<' && code.charAt(i) != '!' && code.charAt(i + 1) == '=' || code.charAt(i) == '=' && code.charAt(i + 1) != ' ' && code.charAt(i + 1) != '=') {
                     java_res.append(code.charAt(i));
                     java_res.append(" ");
                 } else {
@@ -88,6 +88,7 @@ public class JavaDockerCodeSandBox extends JavaCodeSandBoxTemplate {
         // TODO 5.修改类名
         String java_ans_str = java_ans.toString();
         java_ans_str = java_ans_str.replace("class Main", "class Main" + tmp);
+        System.err.println(java_ans_str);
         return java_ans_str;
     }
 
@@ -109,6 +110,23 @@ public class JavaDockerCodeSandBox extends JavaCodeSandBoxTemplate {
             }
             return cpp_code.toString();
         }
+        return code;
+    }
+
+    // TODO 处理Python代码
+    public static String handle_python_code(String code) {
+        if (code.contains("''' show your python code! '''")) {
+            code = code.replace("''' show your python code! '''", "");
+        }
+        code = code.trim();
+        return "import sys\n" +
+                "with open(\"input.txt\", \"r\") as file:\n" +
+                "    sys.stdin = file\n" +
+                "    " + code;
+    }
+
+    // TODO 处理Go代码
+    public static String handle_go_code(String code) {
         return code;
     }
 
@@ -144,6 +162,10 @@ public class JavaDockerCodeSandBox extends JavaCodeSandBoxTemplate {
             executeCodeRequest.setCode(handle_java_code(code));
         } else if ("C++".equals(language)) {
             executeCodeRequest.setCode(handle_cpp_code(code));
+        } else if ("Python".equals(language)) {
+            executeCodeRequest.setCode(handle_python_code(code));
+        } else if ("Go".equals(language)) {
+            executeCodeRequest.setCode(handle_go_code(code));
         }
         // System.out.println(executeCodeRequest.getCode());
         executeCodeRequest.setLanguage(language);
@@ -156,6 +178,10 @@ public class JavaDockerCodeSandBox extends JavaCodeSandBoxTemplate {
             channelExec.setCommand("rm /home/wpl/wpl_java/Main" + tmp + ".java");
         } else if ("C++".equals(language)) {
             channelExec.setCommand("rm /home/wpl/wpl_cpp/input.txt /home/wpl/wpl_cpp/code.cpp");
+        } else if ("Python".equals(language)) {
+            channelExec.setCommand("rm /home/wpl/wpl_python/input.txt /home/wpl/wpl_python/code.py");
+        } else if ("Go".equals(language)) {
+            channelExec.setCommand("rm /home/wpl/wpl_go/input.txt /home/wpl/wpl_go/code.go");
         }
 
         InputStream in = channelExec.getInputStream();
@@ -181,6 +207,10 @@ public class JavaDockerCodeSandBox extends JavaCodeSandBoxTemplate {
             sftp.put(windowsPath, "/home/wpl/wpl_java/");
         } else if ("C++".equals(language)) {
             sftp.put(windowsPath, "/home/wpl/wpl_cpp/");
+        } else if ("Python".equals(language)) {
+            sftp.put(windowsPath, "/home/wpl/wpl_python/");
+        } else if ("Go".equals(language)) {
+            sftp.put(windowsPath, "/home/wpl/wpl_go/");
         }
         sftp.close();
     }
@@ -193,7 +223,13 @@ public class JavaDockerCodeSandBox extends JavaCodeSandBoxTemplate {
             channelExec.setCommand("docker cp /home/wpl/wpl_java/Main" + tmp + ".java" + " " + containerId + ":/");
         } else if ("C++".equals(language)) {
             channelExec.setCommand("docker cp /home/wpl/wpl_cpp/input.txt" + " " + containerId + ":/"
-                                  +"&& docker cp /home/wpl/wpl_cpp/code.cpp" + " " + containerId + ":/");
+                                 + "&& docker cp /home/wpl/wpl_cpp/code.cpp" + " " + containerId + ":/");
+        } else if ("Python".equals(language)) {
+            channelExec.setCommand("docker cp /home/wpl/wpl_python/input.txt" + " " + containerId + ":/"
+                                 + "&& docker cp /home/wpl/wpl_python/code.py" + " " + containerId + ":/");
+        } else if ("Go".equals(language)) {
+            channelExec.setCommand("docker cp /home/wpl/wpl_go/input.txt" + " " + containerId + ":/"
+                    + "&& docker cp /home/wpl/wpl_go/code.go" + " " + containerId + ":/");
         }
         InputStream in = channelExec.getInputStream();
         channelExec.connect();
@@ -223,6 +259,16 @@ public class JavaDockerCodeSandBox extends JavaCodeSandBoxTemplate {
             String cppPath_2 = "E:\\wplcode\\wplcode\\src\\main\\java\\com\\wplcode\\wplcode\\files\\cpp\\code.cpp";
             windows_to_linux(cppPath_1, language);
             windows_to_linux(cppPath_2, language);
+        } else if ("Python".equals(language)) {
+            String pythonPath_1 = "E:\\wplcode\\wplcode\\src\\main\\java\\com\\wplcode\\wplcode\\files\\python\\input.txt";
+            String pythonPath_2 = "E:\\wplcode\\wplcode\\src\\main\\java\\com\\wplcode\\wplcode\\files\\python\\code.py";
+            windows_to_linux(pythonPath_1, language);
+            windows_to_linux(pythonPath_2, language);
+        } else if ("Go".equals(language)) {
+            String goPath_1 = "E:\\wplcode\\wplcode\\src\\main\\java\\com\\wplcode\\wplcode\\files\\go\\input.txt";
+            String goPath_2 = "E:\\wplcode\\wplcode\\src\\main\\java\\com\\wplcode\\wplcode\\files\\go\\code.go";
+            windows_to_linux(goPath_1, language);
+            windows_to_linux(goPath_2, language);
         }
 
         DefaultDockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder()
@@ -246,6 +292,10 @@ public class JavaDockerCodeSandBox extends JavaCodeSandBoxTemplate {
         String image = "openjdk:8"; // TODO java默认镜像
         if ("C++".equals(language)) {
             image = "gcc";
+        } else if ("Python".equals(language)) {
+            image = "python:3.9";
+        } else if ("Go".equals(language)) {
+            image = "golang:1.22.2";
         }
         /*if (FIRST_INIT){
             PullImageCmd pullImageCmd = dockerClient.pullImageCmd(image);
@@ -307,6 +357,10 @@ public class JavaDockerCodeSandBox extends JavaCodeSandBoxTemplate {
                 } else if ("C++".equals(language)) {
                     // TODO 编译c++代码
                     cmdArray = new String[]{"g++", "-o", "code", "code.cpp"};
+                } else if ("Python".equals(language)) {
+                    cmdArray = new String[]{"python", "code.py"};
+                } else if ("Go".equals(language)) {
+                    cmdArray = new String[]{"ls"};
                 }
             } else if (cnt == 2) { // TODO 运行java代码
                 // TODO JAVA
@@ -315,6 +369,12 @@ public class JavaDockerCodeSandBox extends JavaCodeSandBoxTemplate {
                 } else if ("C++".equals(language)) {
                     // TODO 运行c++代码
                     cmdArray = new String[]{"./code"};
+                    // cmdArray = new String[]{"ls"};
+                } else if ("Python".equals(language)) {
+                    // TODO Python一步到位即可
+                    cmdArray = new String[]{"cat", "input.txt"};
+                } else if ("Go".equals(language)) {
+                    cmdArray = new String[]{"ls"};
                 }
             } else if (cnt == 3) { // TODO 暂时用不到
                 cmdArray = new String[]{"mkdir", "jvm"};

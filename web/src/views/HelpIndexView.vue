@@ -91,9 +91,13 @@
         <div v-if="is_writing_comments === true" class="container">
             <div class="row">
                 <div class="col-4">
-                    <img :src="$store.state.user.photo" style="width: 80px; margin-top: 10px; margin-left: -15px;">
-                    <div style="margin-left: -15px;">
+                    <img v-if="$store.state.user.photo !== ''" :src="$store.state.user.photo" style="width: 80px; margin-top: 10px; margin-left: -15px;">
+                    <img v-else-if="$store.state.user.photo === ''" src="https://cdn.acwing.com/media/article/image/2022/08/09/1_1db2488f17-anonymous.png" style="width: 80px; margin-top: 10px; margin-left: -15px;">
+                    <div v-if="$store.state.user.username !== ''" style="margin-left: -15px;">
                         {{ $store.state.user.username }}
+                    </div>
+                    <div v-else-if="$store.state.user.username === ''" style="margin-left: -15px;">
+                        User
                     </div>
                 </div>
                 <div class="col-8">
@@ -176,6 +180,7 @@
 import { onMounted, ref } from 'vue'
 import { useStore } from 'vuex'
 import $ from 'jquery'
+import router from '../router/index'
 
 export default {
     setup() {
@@ -254,6 +259,15 @@ export default {
         };
 
         const post_comment = () => {
+            // 如果未登录，无法提交评论
+            let token = store.state.user.token;
+            if (token === null || token === '') {
+                alert("Please login first!");
+                router.push({
+                    name: 'login_index',
+                });
+                return;
+            }
             content.value = content.value.trim();
             if (content.value == "") {
                 alert("Comment content cannot be empty!");

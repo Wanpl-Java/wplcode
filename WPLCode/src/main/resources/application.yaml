@@ -1,6 +1,15 @@
 server:
   port: 3020
 spring:
+  ai:
+    openai:
+      api-key: hk-yknnba1000052208028da3f549fe579bb97f9ffd82fdf5c2
+      base-url: https://api.openai-hk.com
+      chat:
+        options:
+          model: gpt-4o-mini
+      embedding:
+        enabled: true
   datasource:
     username: root
     password: wpl20040217
@@ -9,7 +18,7 @@ spring:
   mail:
     host: smtp.qq.com
     username: 810220955@qq.com
-    password: abkpgozuoxfgbdhj
+    password: fdjbofifctksbbjd
     default-encoding: utf-8
     ssl:
       enabled: true

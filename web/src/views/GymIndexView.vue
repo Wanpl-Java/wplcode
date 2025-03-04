@@ -37,13 +37,13 @@
         <div class="container">
             <div class="row">
                 <div class="col-12">
-                    <div style="margin-top: 15px; font-size: 20px;">
+                    <div style="margin-top: 15px; font-size: 20px; font-weight: 600;">
                         {{ topics[topic_id - 1].id }}. {{ topics[topic_id - 1].title }}
                     </div>
-                    <div style="margin-top: 10px; font-size: 16px;">
+                    <div style="margin-top: 10px; font-size: 16px; font-weight: 600;">
                         time limit per test: 2 seconds
                     </div>
-                    <div style="margin-top: 5px; font-size: 16px;">
+                    <div style="margin-top: 5px; font-size: 16px; font-weight: 600;">
                         memory limit per test: 256 megabytes
                     </div>
                     <div style="margin-top: 10px; font-weight: 600; text-align: left; margin-left: 50px;">
@@ -160,11 +160,59 @@
                                     highlightActiveLine: true,
                                     border,
                                 }" />
+                            <VAceEditor v-else-if="lang_value === 'Go'" v-model:value="go_code_content" @init="editorInit" lang="golang"
+                                theme="vibrant_ink" style="width: 750px; height: 500px; margin-top: 10px;" :options="{
+                                    enableBasicAutocompletion: true, //启用基本自动完成
+                                    enableSnippets: true, // 启用代码段
+                                    enableLiveAutocompletion: true, // 启用实时自动完成
+                                    fontSize: 15, //设置字号
+                                    tabSize: 4, // 标签大小
+                                    showPrintMargin: false, //去除编辑器里的竖线
+                                    highlightActiveLine: true,
+                                    border,
+                                }" />
                         </div>
                         <div class="flex-container" style="justify-content: center;">
-                            <el-button @click="submit_code();" style="margin-top: 15px; font-size: 14px; color: white;" color="#5CB85C" round>{{ submit_btn_content }}</el-button>
+                            <el-button @click="to_debug();" style="width: 95px; height: 35px; margin-top: 15px; font-size: 14px;" type="warning" round>Debug</el-button>
+                            <el-button @click="submit_code();" style="width: 95px; height: 35px; margin-top: 15px; font-size: 14px; color: white;" color="#5CB85C" round>{{ submit_btn_content }}</el-button>
                             <!--<button @click="submit_code" style="border: 1px solid black; margin-top: 15px; font-size: 14px;">Submit</button>-->
                         </div>
+                        <el-dialog v-model="debug_DialogVisble" width="500" center style="margin-top: 120px; height: 300px;">
+                            <div class="flex-container" style="font-size: 20px; font-weight: 600; justify-content: center;">
+                                Code running status:
+                                <div v-if="code_running_status === 'Finished'" style="color: #449D44; margin-left: 10px;">
+                                    {{ code_running_status }}
+                                </div>
+                                <div v-else-if="code_running_status === ''" style="margin-left: 10px;">
+                                    {{ code_running_status }}
+                                </div>
+                                <div v-else-if="code_running_status === 'Running'" style="color: #337AB7; margin-left: 10px;">
+                                    {{ code_running_status }}<img style="width: 20px; margin-left: 5px;" src="https://cdn.acwing.com/static/web/gif/code_status_loading.gif">
+                                </div>
+                                <div v-else style="color: #D05451; margin-left: 10px;">
+                                    {{ code_running_status }}
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="card" style="border: 1px solid balck; height: 150px;">
+                                <div style="margin-top: 5px; font-size: 16px; margin-left: 15px;">
+                                    Input
+                                </div>
+                                <div>
+                                    <textarea v-model="user_input_example" style="resize: none; margin-top: 5px; margin-left: 15px; width: 430px; background-color: #F5F5F5; border-radius: 5px; height: 30px; font-size: 12px;"></textarea>
+                                </div>
+                                <div style="margin-top: 5px; font-size: 16px; margin-left: 15px;">
+                                    Output
+                                </div>
+                                <div>
+                                    <textarea disabled v-model="user_output_example" style="resize: none; margin-top: 5px; margin-left: 15px; width: 430px; background-color: #F5F5F5; border-radius: 5px; height: 30px; font-size: 12px;"></textarea>
+                                </div>
+                            </div>
+                            <div class="flex-container" style="justify-content: center;">
+                                <el-button @click="debug_code(user_input_example);" class="flex-container" type="warning" style="margin-top: 10px;">Debug</el-button>
+                                <el-button @click="debug_DialogVisble = false;" class="flex-container" type="danger" style="margin-top: 10px;">Exit</el-button>
+                            </div>
+                        </el-dialog>
                     </div>
                 </div>
             </div>
@@ -181,12 +229,28 @@ import 'ace-builds/src-noconflict/mode-c_cpp';
 import 'ace-builds/src-noconflict/mode-json';
 import 'ace-builds/src-noconflict/mode-java';
 import 'ace-builds/src-noconflict/mode-python'
+import 'ace-builds/src-noconflict/mode-golang'
 import 'ace-builds/src-noconflict/theme-chaos';
 import 'ace-builds/src-noconflict/theme-vibrant_ink';
 import 'ace-builds/src-noconflict/ext-language_tools';
 import { useStore } from 'vuex';
+import router from '../router/index';
 
 export default {
+    watch: {
+        debug_DialogVisble(New) {
+            // 当退出的时候
+            if (New === false) {
+                setTimeout(() => {
+                    this.user_output_example = "";
+                    this.code_running_status = "";
+                }, 50);
+            }
+        },
+        topic_id(New) {
+            this.user_input_example = this.topics[New - 1].inputExample;
+        },
+    },
     components: {
         VAceEditor,
     },
@@ -199,6 +263,9 @@ export default {
         let topics = ref([]);
         let topic_id = ref(0);
 
+        let user_input_example = ref("");
+        let user_output_example = ref("");
+
         const store = useStore();
 
         let submit_btn_content = ref("Submit");
@@ -207,9 +274,14 @@ export default {
 
         let lang_value = ref('');
 
+        let debug_DialogVisble = ref(false);
+
+        let code_running_status = ref("");
+
         let java_code_content = ref("import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n\n    }\n}");
         let cpp_code_content = ref("#include <bits/stdc++.h>\n\nusing namespace std;\n\nint main() {\n\n    return 0;\n}");
-        let python_code_content = ref("");
+        let python_code_content = ref("''' show your python code! '''\n");
+        let go_code_content = ref("/* show your go code! */\n");
 
         const lang_select = [
             {
@@ -224,6 +296,10 @@ export default {
                 value: 'Python',
                 label: 'Python',
             },
+            {
+                value: "Go",
+                label: "Go",
+            }
         ];
 
         const to_topic_info = id => {
@@ -236,7 +312,126 @@ export default {
             location.reload();
         }
 
+        const to_debug = () => {
+            // 用户需要登录后方可提交代码
+            if (store.state.user.token === null || store.state.user.token === '') {
+                alert("Please login first!");
+                router.push({
+                    name: "login_index",
+                });
+                return;
+            }
+            if (lang_value.value === "") {
+                alert("Please choose your language!");
+                return;
+            }
+            setTimeout(() => {
+                debug_DialogVisble.value = true;
+            }, 20);
+        };
+
+        const debug_code = (user_input_example) => {
+            code_running_status.value = "Running";
+            if (lang_value.value === "Java") {
+                $.ajax({
+                    url: "http://localhost:3020/debugCode/",
+                    type: "post",
+                    data: {
+                        "code": java_code_content.value,
+                        "language": lang_value.value,
+                        "inputExample": user_input_example,
+                    },
+                    headers: {
+                        Authorization: "Bearer " + store.state.user.token,
+                    },
+                    success(resp) {
+                        // console.log(resp);
+                        if (resp.error_message === 'success') {
+                            user_output_example.value = resp.output;
+                            code_running_status.value = "Finished";
+                        } else {
+                            code_running_status.value = resp.error_message;
+                        }
+                    }
+                });
+            } else if (lang_value.value === 'C++') {
+                $.ajax({
+                    url: "http://localhost:3020/debugCode/",
+                    type: "post",
+                    data: {
+                        "code": cpp_code_content.value,
+                        "language": lang_value.value,
+                        "inputExample": user_input_example,
+                    },
+                    headers: {
+                        Authorization: "Bearer " + store.state.user.token,
+                    },
+                    success(resp) {
+                        // console.log(resp);
+                        if (resp.error_message === 'success') {
+                            user_output_example.value = resp.output;
+                            code_running_status.value = "Finished";
+                        } else {
+                            code_running_status.value = resp.error_message;
+                        }
+                    }
+                });
+            } else if (lang_value.value === 'Python') {
+                $.ajax({
+                    url: "http://localhost:3020/debugCode/",
+                    type: "post",
+                    data: {
+                        "code": python_code_content.value,
+                        "language": lang_value.value,
+                        "inputExample": user_input_example,
+                    },
+                    headers: {
+                        Authorization: "Bearer " + store.state.user.token,
+                    },
+                    success(resp) {
+                        // console.log(resp);
+                        if (resp.error_message === 'success') {
+                            user_output_example.value = resp.output;
+                            code_running_status.value = "Finished";
+                        } else {
+                            code_running_status.value = resp.error_message;
+                        }
+                    }
+                });
+            } else if (lang_value.value === 'Go') {
+                $.ajax({
+                    url: "http://localhost:3020/openAiDebug/",
+                    type: "post",
+                    data: {
+                        "code": go_code_content.value,
+                        "language": lang_value.value,
+                        "inputExample": user_input_example,
+                    },
+                    headers: {
+                        Authorization: "Bearer " + store.state.user.token,
+                    },
+                    success(resp) {
+                        // console.log(resp);
+                        if (resp.error_message === 'success') {
+                            user_output_example.value = resp.output;
+                            code_running_status.value = "Finished";
+                        } else {
+                            code_running_status.value = resp.error_message;
+                        }
+                    }
+                });
+            }
+        };
+
         const submit_code = () => {
+            // 用户需要登录后方可提交代码
+            if (store.state.user.token === null || store.state.user.token === '') {
+                alert("Please login first!");
+                router.push({
+                    name: "login_index",
+                });
+                return;
+            }
             if (lang_value.value === "") {
                 alert("Please choose your language!");
                 return;
@@ -288,8 +483,57 @@ export default {
                     }
                 });
             } else if (lang_value.value === 'Python') {
-                alert("Python!");
+                submit_btn_content.value = "Running...";
+                $.ajax({
+                    url: "http://localhost:3020/handleCode/",
+                    type: "post",
+                    data: {
+                        "code": python_code_content.value,
+                        "language": lang_value.value,
+                        "topicId": topic_id.value,
+                    },
+                    headers: {
+                        Authorization: "Bearer " + store.state.user.token,
+                    },
+                    success(resp) {
+                        if (resp.error_message !== 'success') {
+                            alert(resp.error_message);
+                        } else {
+                            alert("Submit successfully!");
+                        }
+                        python_code_content.value = "''' show your python code! '''\n";
+                        submit_btn_content.value = "Submit";
+                    }
+                });
+            } else if (lang_value.value === 'Go') {
+                judge_go();
             }
+        };
+
+        // 评测go语言代码专用
+        const judge_go = () => {
+            submit_btn_content.value = "Running...";
+            $.ajax({
+                url: "http://localhost:3020/openAi/",
+                type: "post",
+                data: {
+                    "code": go_code_content.value,
+                    "language": lang_value.value,
+                    "topicId": topic_id.value,
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                success(resp) {
+                    if (resp.error_message !== 'success') {
+                        alert(resp.error_message);
+                    } else {
+                        alert("Submit successfully!");
+                    }
+                    go_code_content.value = "/* show your go code! */\n";
+                    submit_btn_content.value = "Submit";
+                }
+            });
         };
 
         const search_topic = () => {
@@ -321,6 +565,7 @@ export default {
                 type: "get",
                 success(resp) {
                     topics.value = resp.topics;
+
                 }
             });
         };
@@ -346,6 +591,14 @@ export default {
             cpp_code_content,
             python_code_content,
             submit_btn_content,
+            go_code_content,
+            judge_go,
+            debug_DialogVisble,
+            debug_code,
+            user_input_example,
+            user_output_example,
+            code_running_status,
+            to_debug,
         }
     }
 }
