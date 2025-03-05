@@ -32,7 +32,9 @@ public class AddHelpCommentServiceImpl implements AddHelpCommentService {
                 content,
                 0,
                 0,
-                new Date()
+                new Date(),
+                "",
+                ""
         );
         helpCommentMapper.insert(helpComment);
     }

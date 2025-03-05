@@ -148,8 +148,20 @@
                     </div>
                 </div>
                 <div class="col-2" style="margin-top: 30px; text-align: right; font-size: 12px;">
-                    <img src="../assets/icon5.png" style="width: 16px;">{{ comment.likes }}
-                    <img src="../assets/icon5.png" style="width: 16px; transform: scaleY(-1);">{{ comment.dislikes }}
+                    <div class="flex-container" style="justify-content: right;">
+                        <div v-if="is_exist_like_map[comment.id] === false">
+                            <img @click="update_like('addLike', comment.id);" src="../assets/icon5.png" style="width: 16px; cursor: pointer;">{{ comment.likes }}
+                        </div>
+                        <div v-else-if="is_exist_like_map[comment.id] === true">
+                            <img @click="update_like('removeLike', comment.id);" src="../assets/icon6.png" style="width: 16px; cursor: pointer;">{{ comment.likes }}
+                        </div>
+                        <div v-if="is_exist_dislike_map[comment.id] === false">
+                            <img @click="update_dislike('addDislike', comment.id);" src="../assets/icon5.png" style="width: 16px; cursor: pointer; transform: scaleY(-1);">{{ comment.dislikes }}
+                        </div>
+                        <div v-else-if="is_exist_dislike_map[comment.id] === true">
+                            <img @click="update_dislike('removeDislike', comment.id);" src="../assets/icon7.png" style="width: 16px; cursor: pointer; transform: scaleY(-1);">{{ comment.dislikes }}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -191,6 +203,10 @@ export default {
         // 正在编辑的评论内容
         let content = ref("");
 
+        // 当前用户对于评论的点赞、踩情况的map
+        let is_exist_like_map = ref(new Map());
+        let is_exist_dislike_map = ref(new Map());
+
         // 分页
         let comments = ref([]);
         let current_page = 1;
@@ -221,6 +237,65 @@ export default {
             pages.value = new_pages;
         };
 
+        const update_like = (type, commentId) => {
+            let token = store.state.user.token;
+            if (token === null || token === '') {
+                alert("Please login first!");
+                router.push({
+                    name: 'login_index',
+                });
+                return;
+            }
+            setTimeout(() => {
+                $.ajax({
+                    url: "http://localhost:3020/updateHelpCommentLike/",
+                    type: "put",
+                    data: {
+                        "type": type,
+                        "commentId": commentId,
+                    },
+                    headers: {
+                        Authorization: "Bearer " + store.state.user.token,
+                    },
+                    success() {
+                        refresh_comments(current_page);
+                        setTimeout(() => {
+                            check_is_exist_like();
+                        }, 20);
+                    }
+                });
+            }, 20);
+        };
+
+        const update_dislike = (type, commentId) => {
+            let token = store.state.user.token;
+            if (token === null || token === '') {
+                alert("Please login first!");
+                router.push({
+                    name: 'login_index',
+                });
+                return;
+            }
+            setTimeout(() => {
+                $.ajax({
+                    url: "http://localhost:3020/updateHelpCommentDislike/",
+                    type: "put",
+                    data: {
+                        "type": type,
+                        "commentId": commentId,
+                    },
+                    headers: {
+                        Authorization: "Bearer " + store.state.user.token,
+                    },
+                    success() {
+                        refresh_comments(current_page);
+                        setTimeout(() => {
+                            check_is_exist_dislike();
+                        }, 20);
+                    }
+                });
+            }, 20);
+        };
 
         onMounted(() => {
             for (let i = 1; i <= 20; i ++ ) {
@@ -292,6 +367,48 @@ export default {
             }, 20);
         };
 
+        const check_is_exist_like = () => {
+            let token = store.state.user.token;
+            if (token === null || token === '') {
+                return;
+            }
+            setTimeout(() => {
+                $.ajax({
+                    url: "http://localhost:3020/checkIsExistLike/",
+                    type: "get",
+                    headers: {
+                        Authorization: "Bearer " + store.state.user.token,
+                    },
+                    success(resp) {
+                        is_exist_like_map.value = resp;
+                    }
+                });
+            }, 20);
+        };
+
+        check_is_exist_like();
+
+        const check_is_exist_dislike = () => {
+            let token = store.state.user.token;
+            if (token === null || token === '') {
+                return;
+            }
+            setTimeout(() => {
+                $.ajax({
+                    url: "http://localhost:3020/checkIsExistDislike/",
+                    type: "get",
+                    headers: {
+                        Authorization: "Bearer " + store.state.user.token,
+                    },
+                    success(resp) {
+                        is_exist_dislike_map.value = resp;
+                    }
+                });
+            }, 20);
+        };
+
+        check_is_exist_dislike();
+
         const refresh_comments = page => {
             current_page = page;
             $.ajax({
@@ -327,6 +444,11 @@ export default {
             current_page,
             pages,
             click_page,
+            update_like,
+            is_exist_like_map,
+            check_is_exist_like,
+            is_exist_dislike_map,
+            update_dislike,
         }
     }
 }

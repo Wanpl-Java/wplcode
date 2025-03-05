@@ -22,9 +22,15 @@ public class LoginServiceImpl implements LoginService {
     @Override
     public Map<String, String> login(String username_or_email, String password) {
         Map<String, String> resp = new HashMap<>();
+        if (username_or_email != null) {
+            username_or_email = username_or_email.trim();
+        }
         if (username_or_email == null || username_or_email.isEmpty()) {
             resp.put("error_message", "The username or email cannot be empty!");
             return resp;
+        }
+        if (password != null) {
+            password = password.trim();
         }
         if (password == null || password.isEmpty()) {
             resp.put("error_message", "The password cannot be empty!");
