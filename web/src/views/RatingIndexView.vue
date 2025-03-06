@@ -86,9 +86,6 @@ export default {
         $.ajax({
             url: "http://localhost:3020/analyseCity/",
             type: "get",
-            headers: {
-                Authorization: "Bearer " + store.state.user.token,
-            },
             success(resp) {
                 console.log(resp);
             }

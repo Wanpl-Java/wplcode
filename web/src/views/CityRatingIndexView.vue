@@ -17,21 +17,16 @@
 
 <script>
 import { ref } from 'vue'
-import { useStore } from 'vuex'
 import $ from 'jquery'
 
 export default {
     setup() {
-        const store = useStore();
         let city_counts = ref([]);
 
         const refresh_city_counts = () => {
             $.ajax({
                 url: "http://localhost:3020/analyseCity/",
                 type: "get",
-                headers: {
-                    Authorization: "Bearer " + store.state.user.token,
-                },
                 success(resp) {
                     city_counts.value = resp;
                 }

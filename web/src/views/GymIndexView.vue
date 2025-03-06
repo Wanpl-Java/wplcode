@@ -453,7 +453,7 @@ export default {
                         if (resp.error_message !== 'success') {
                             alert(resp.error_message);
                         } else {
-                            alert("Submit successfully!");
+                            alert("Accept!");
                         }
                         java_code_content.value = "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n\n    }\n}";
                         submit_btn_content.value = "Submit";
@@ -476,7 +476,7 @@ export default {
                         if (resp.error_message !== 'success') {
                             alert(resp.error_message);
                         } else {
-                            alert("Submit successfully!");
+                            alert("Accept!");
                         }
                         cpp_code_content.value = "#include <bits/stdc++.h>\n\nusing namespace std;\n\nint main() {\n\n    return 0;\n}";
                         submit_btn_content.value = "Submit";
@@ -499,7 +499,7 @@ export default {
                         if (resp.error_message !== 'success') {
                             alert(resp.error_message);
                         } else {
-                            alert("Submit successfully!");
+                            alert("Accept!");
                         }
                         python_code_content.value = "''' show your python code! '''\n";
                         submit_btn_content.value = "Submit";
@@ -528,7 +528,7 @@ export default {
                     if (resp.error_message !== 'success') {
                         alert(resp.error_message);
                     } else {
-                        alert("Submit successfully!");
+                        alert("Accept!");
                     }
                     go_code_content.value = "/* show your go code! */\n";
                     submit_btn_content.value = "Submit";

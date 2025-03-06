@@ -160,14 +160,28 @@ import { onMounted, ref } from 'vue'
 import $ from 'jquery'
 import { useStore } from 'vuex'
 import router from '../router/index';
+import { useRoute } from 'vue-router'
+import { computed } from 'vue'
 
 export default {
+    /*watch: {
+        route_name() {
+            let reload_info = localStorage.getItem("reload_info");
+            if (reload_info) {
+                localStorage.removeItem("reload_info");
+                location.reload();
+            }
+        },
+    },*/
     setup() {
         let jwt_token = ref(localStorage.getItem("wplcode_jwt_token"));
         let user = ref(new Object());
         const asklogo_DialogVisble = ref(false);
 
         const store = useStore();
+
+        const route = useRoute();
+        let route_name = computed(() => route.name);
 
         const rating_top_10_users = ref([]);
 
@@ -176,6 +190,8 @@ export default {
         let latest_contest = ref(new Object());
         let days = ref(0);
         let can_register = ref(false);
+
+        let page_visit_cnt = ref(store.state.pageVisit.page_visit_cnt);
 
         const findUser = () => {
             // 为防止影响用户好的体验，判断查询的用户是否存在，如果不存在直接提示用户相关信息并return
@@ -304,6 +320,8 @@ export default {
             can_register,
             to_all_submissions,
             to_talks,
+            page_visit_cnt,
+            route_name,
         }
     }
 }

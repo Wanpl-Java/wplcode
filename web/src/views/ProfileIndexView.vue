@@ -251,21 +251,23 @@ export default {
         };
 
         const check_is_friend = () => {
-            $.ajax({
-                url: "http://localhost:3020/checkIsFriend/",
-                type: "get",
-                data: {
-                    "username": pathName.value,
-                },
-                headers: {
-                    Authorization: "Bearer " + store.state.user.token,
-                },
-                success(resp) {
-                    if (resp === true) {
-                        is_friend.value = true;
-                    }
-                },
-            });
+            if (store.state.user.token !== '') {
+                $.ajax({
+                    url: "http://localhost:3020/checkIsFriend/",
+                    type: "get",
+                    data: {
+                        "username": pathName.value,
+                    },
+                    headers: {
+                        Authorization: "Bearer " + store.state.user.token,
+                    },
+                    success(resp) {
+                        if (resp === true) {
+                            is_friend.value = true;
+                        }
+                    },
+                });
+            }
         };
 
         const specify_info = profile_name => {

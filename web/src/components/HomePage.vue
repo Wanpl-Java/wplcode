@@ -414,35 +414,91 @@ export default {
         };
 
         const to_myhome = () => {
-            router.push({name: 'myhome_index'});
+            /*localStorage.setItem("reload_info", true);
+            setTimeout(() => {
+                router.push({name: 'myhome_index'});
+            }, 20);*/
+            router.push({ name: 'myhome_index' });
+            setTimeout(() => {
+                location.reload();
+            }, 10);
         };
 
         const to_register = () => {
+            /*localStorage.setItem("reload_info", true);
+            setTimeout(() => {
+                router.push({ name: 'register_index' });
+            }, 20);*/
             router.push({ name: 'register_index' });
+            setTimeout(() => {
+                location.reload();
+            }, 10);
         };
 
         const to_login = () => {
+            /*localStorage.setItem("reload_info", true);
+            setTimeout(() => {
+                router.push({ name: 'login_index' });
+            }, 20);*/
             router.push({ name: 'login_index' });
+            setTimeout(() => {
+                location.reload();
+            }, 10);
         };
 
         const to_contests = () => {
+            /*localStorage.setItem("reload_info", true);
+            setTimeout(() => {
+                router.push({ name: 'contests_index' });
+            }, 20);*/
             router.push({ name: 'contests_index' });
+            setTimeout(() => {
+                location.reload();
+            }, 10);
         }
 
         const to_gym = () => {
+            /*localStorage.setItem("reload_info", true);
+            setTimeout(() => {
+                router.push({ name: 'gym_index' });
+            }, 20);*/
             router.push({ name: 'gym_index' });
+            setTimeout(() => {
+                location.reload();
+            }, 10);
         };
 
         const to_rating = () => {
+            /*localStorage.setItem("reload_info", true);
+            setTimeout(() => {
+                router.push({ name: 'rating_index' });
+            }, 20);*/
             router.push({ name: 'rating_index' });
+            setTimeout(() => {
+                location.reload();
+            }, 10);
         };
 
         const to_help = () => {
+            /*localStorage.setItem("reload_info", true);
+            setTimeout(() => {
+                router.push({ name: 'help_index' });
+            }, 20);*/
             router.push({ name: 'help_index' });
+            setTimeout(() => {
+                location.reload();
+            }, 10);
         };
 
         const to_game = () => {
+            /*localStorage.setItem("reload_info", true);
+            setTimeout(() => {
+                router.push({ name: 'game_index' });
+            }, 20);*/
             router.push({ name: 'game_index' });
+            setTimeout(() => {
+                location.reload();
+            }, 10);
         };
 
         const logout = () => {

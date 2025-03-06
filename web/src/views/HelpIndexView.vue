@@ -417,9 +417,6 @@ export default {
                 data: {
                     page,
                 },
-                headers: {
-                    Authorization: "Bearer " + store.state.user.token,
-                },
                 success(resp) {
                     comments.value = resp.comments;
                     total_comments = resp.comment_counts;

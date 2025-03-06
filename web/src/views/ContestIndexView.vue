@@ -479,19 +479,24 @@ export default {
                     "topicId": topicId,
                 }
             })
+            setTimeout(() => {
+                location.reload();
+            }, 10);
         };
 
         onMounted(() => {
-            $.ajax({
-                url: "http://localhost:3020/userinfo/",
-                type: "get",
-                headers: {
-                    Authorization: "Bearer " + jwt_token,
-                },
-                success(resp) {
-                    store.commit("updateUser", resp.user);
-                }
-            });
+            if (jwt_token !== null) {
+                $.ajax({
+                    url: "http://localhost:3020/userinfo/",
+                    type: "get",
+                    headers: {
+                        Authorization: "Bearer " + jwt_token,
+                    },
+                    success(resp) {
+                        store.commit("updateUser", resp.user);
+                    }
+                });
+            }
             setTimeout(() => {
                 for (let i = 0; i < window.location.pathname.length; i ++ ) {
                     if (window.location.pathname[i] >= '0' && window.location.pathname[i] <= '9') {
@@ -512,21 +517,23 @@ export default {
 
         // 比赛开始后报名
         const late_register = isOk => {
-            $.ajax({
-                url: "http://localhost:3020/registerContest/",
-                type: "post",
-                data: {
-                    "contestId": contestId,
-                    "isOk": isOk,
-                },
-                headers: {
-                    Authorization: "Bearer " + store.state.user.token,
-                },
-                success() {
-                    refresh_register_counts();
-                    location.reload();
-                }
+            if (jwt_token !== null) {
+                $.ajax({
+                    url: "http://localhost:3020/registerContest/",
+                    type: "post",
+                    data: {
+                        "contestId": contestId,
+                        "isOk": isOk,
+                    },
+                    headers: {
+                        Authorization: "Bearer " + store.state.user.token,
+                    },
+                    success() {
+                        refresh_register_counts();
+                        location.reload();
+                    }
             });
+            }
         };
 
         // 报名此场比赛
@@ -536,28 +543,33 @@ export default {
                 router.push({ name: 'login_index' });
                 return;
             }
-            $.ajax({
-                url: "http://localhost:3020/registerContest/",
-                type: "post",
-                data: {
-                    "contestId": contestId,
-                    "isOk": isOk,
-                },
-                headers: {
-                    Authorization: "Bearer " + store.state.user.token,
-                },
-                success(resp) {
-                    refresh_register_counts();
-                    if (resp.error_message === 'have registered!') {
-                        have_registered.value = "true";
-                    } else if (resp.error_message === 'have not registered!' && isOk === "true") {
-                        have_registered.value = "true";
-                        registerMsg_DialogVisble.value = true;
-                    } else if (resp.error_message === 'have not registered!' && isOk === "false") {
-                        have_registered.value = "false";
+            if (jwt_token === null) {
+                return;
+            }
+            setTimeout(() => {
+                $.ajax({
+                    url: "http://localhost:3020/registerContest/",
+                    type: "post",
+                    data: {
+                        "contestId": contestId,
+                        "isOk": isOk,
+                    },
+                    headers: {
+                        Authorization: "Bearer " + store.state.user.token,
+                    },
+                    success(resp) {
+                        refresh_register_counts();
+                        if (resp.error_message === 'have registered!') {
+                            have_registered.value = "true";
+                        } else if (resp.error_message === 'have not registered!' && isOk === "true") {
+                            have_registered.value = "true";
+                            registerMsg_DialogVisble.value = true;
+                        } else if (resp.error_message === 'have not registered!' && isOk === "false") {
+                            have_registered.value = "false";
+                        }
                     }
-                }
-            });
+                });
+            }, 20);
         };
 
         const refresh_pass_rate = () => {

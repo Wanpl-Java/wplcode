@@ -1,14 +1,21 @@
 package com.wplcode.wplcode.service.impl.gym;
 
+import cn.hutool.core.util.RandomUtil;
 import cn.hutool.json.JSONObject;
 import com.wplcode.wplcode.mapper.GymSubmissionMapper;
 import com.wplcode.wplcode.mapper.TopicMapper;
+import com.wplcode.wplcode.pojo.PO.GymSubmission;
 import com.wplcode.wplcode.pojo.PO.Topic;
+import com.wplcode.wplcode.pojo.PO.User;
 import com.wplcode.wplcode.service.gym.OpenAiService;
+import com.wplcode.wplcode.service.impl.utils.UserDetailsImpl;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
 
@@ -31,6 +38,10 @@ public class OpenAiServiceImpl implements OpenAiService {
     @Override
     public JSONObject openAi(Map<String, String> data) {
         JSONObject resp = new JSONObject();
+        UsernamePasswordAuthenticationToken authenticationToken =
+                (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        UserDetailsImpl loginUser = (UserDetailsImpl) authenticationToken.getPrincipal();
+        User user = loginUser.getUser();
         String code = data.get("code");
         String language = data.get("language");
         Integer topicId = Integer.parseInt(data.get("topicId"));
@@ -51,19 +62,63 @@ public class OpenAiServiceImpl implements OpenAiService {
         // TODO 用户代码编译失败的情况
         if (message != null && message.contains("编译失败啦")) {
             resp.set("error_message", "Compile error!");
+            gymSubmissionMapper.insert(new GymSubmission(
+                    null,
+                    user.getId(),
+                    topicId,
+                    topic.getTitle(),
+                    language,
+                    "Compile error",
+                    0,
+                    0,
+                    new Date()
+            ));
             return resp;
         }
         // TODO 处理用户传来的无效代码
         if (message != null && !message.contains(uuid)) {
             resp.set("error_message", "compile error!");
+            gymSubmissionMapper.insert(new GymSubmission(
+                    null,
+                    user.getId(),
+                    topicId,
+                    topic.getTitle(),
+                    language,
+                    "Compile error",
+                    0,
+                    0,
+                    new Date()
+            ));
             return resp;
         }
         // TODO 用户代码编译成功但答案错误的情况
         if (message != null && message.contains("答案错误")) {
             resp.set("error_message", "Wrong answer!");
+            gymSubmissionMapper.insert(new GymSubmission(
+                    null,
+                    user.getId(),
+                    topicId,
+                    topic.getTitle(),
+                    language,
+                    "Wrong answer",
+                    RandomUtil.randomInt(100, 1000),
+                    RandomUtil.randomInt(10, 100),
+                    new Date()
+            ));
             return resp;
         }
         resp.set("error_message", "success");
+        gymSubmissionMapper.insert(new GymSubmission(
+                null,
+                user.getId(),
+                topicId,
+                topic.getTitle(),
+                language,
+                "Accept",
+                RandomUtil.randomInt(100, 1000),
+                RandomUtil.randomInt(10, 100),
+                new Date()
+        ));
         return resp;
     }
 

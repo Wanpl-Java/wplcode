@@ -68,6 +68,7 @@
 import { onMounted, ref } from 'vue';
 import { useStore } from 'vuex';
 import $ from 'jquery';
+import router from '../router/index';
 
 export default {
     setup() {
@@ -85,25 +86,35 @@ export default {
         let Content = ref("");
 
         const send_message = () => {
-            $.ajax({
-                url: "http://localhost:3020/sendMessage/",
-                type: "post",
-                data: {
-                    "To": To.value,
-                    "Content": Content.value,
-                },
-                headers: {
-                    Authorization: "Bearer " + jwt_token.value,
-                },
-                success(resp) {
-                    if (resp.error_message === 'success') {
-                        alert("Send message successfully!");
-                        sendMessage_DialogVisble.value = false;
-                    } else {
-                        alert(resp.error_message);
+            if (jwt_token.value === null) {
+                alert("Please login first!");
+                router.push({
+                    name: "login_index",
+                });
+                return;
+            }
+            setTimeout(() => {
+                $.ajax({
+                    url: "http://localhost:3020/sendMessage/",
+                    type: "post",
+                    data: {
+                        "To": To.value,
+                        "Content": Content.value,
+                    },
+                    headers: {
+                        Authorization: "Bearer " + jwt_token.value,
+                    },
+                    success(resp) {
+                        if (resp.error_message === 'success') {
+                            alert("Send message successfully!");
+                            refresh_sendout();
+                            sendMessage_DialogVisble.value = false;
+                        } else {
+                            alert(resp.error_message);
+                        }
                     }
-                }
-            });
+                });
+            }, 20);
         };
 
         onMounted(() => {
