@@ -31,8 +31,10 @@ public class UpdateHelpCommentLikeServiceImpl implements UpdateHelpCommentLikeSe
             String likesLst = helpComment.getLikesLst();
             String[] split = likesLst.split(",");
             StringBuilder res = new StringBuilder();
-            for (int i = 0; i < split.length - 1; i ++ ) {
-                res.append(split[i]).append(",");
+            for (String s : split) {
+                if (!s.equals(Integer.toString(user.getId()))) {
+                    res.append(s).append(",");
+                }
             }
             helpCommentMapper.updateLikesLst(res.toString(), commentId);
         }

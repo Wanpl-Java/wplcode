@@ -32,6 +32,9 @@
                 </tr>
             </tbody>
         </table>
+        <div style="text-align: right;">
+            <a @click="to_my_gym_submissions();" href="javascript:void(0)" style="text-decoration: none; color: #0000CC;">→My submissions</a>
+        </div>
     </div>
     <div v-else-if="now_show === 'topic_info'">
         <div class="container">
@@ -218,6 +221,57 @@
             </div>
         </div>
     </div>
+    <div v-else-if="now_show === 'my_gym_submissions'">
+        <div class="flex-container" style="justify-content: right;">
+            <div style="font-weight: 600;">
+                Return
+            </div>
+            <svg @click="to_topic_bank();" xmlns="http://www.w3.org/2000/svg" style="width: 30px; margin-left: 5px; cursor: pointer;" class="ionicon" viewBox="0 0 512 512"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M112 160l-64 64 64 64"/><path d="M64 224h294c58.76 0 106 49.33 106 108v20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/>
+            </svg>
+        </div>
+        <table class="table" style="border: 1px solid black; border-collapse: collapse; margin-top: 0px;">
+            <thead>
+                <tr style="font-size: 14px;">
+                    <th scope="col">#</th>
+                    <th scope="col">Topic</th>
+                    <th scope="col">Lang</th>
+                    <th scope="col">Verdict</th>
+                    <th scope="col">Time cost(ms)</th>
+                    <th scope="col">Memory cost(KB)</th>
+                    <th scope="col">When</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="gym_submisson in gym_submissons" :key="gym_submisson.id" style="font-size: 14px;">
+                    <td>{{ gym_submisson.id }}</td>
+                    <td>{{ gym_submisson.topicId }}.{{ gym_submisson.topicName }}</td>
+                    <td>{{ gym_submisson.language }}</td>
+                    <td v-if="gym_submisson.result === 'Accept'" style="color: #5CB85C;">{{ gym_submisson.result }}</td>
+                    <td v-else-if="gym_submisson.result !== 'Accept'" style="color: #D9534F;">{{ gym_submisson.result }}</td>
+                    <td>{{ gym_submisson.timeCost }}</td>
+                    <td>{{ gym_submisson.memoryCost }}</td>
+                    <td>{{ gym_submisson.submitTime }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <nav aria-label="Page navigation example">
+            <ul class="pagination pagination-sm" style="float: right;">
+                <li class="page-item" @click="click_page(-2)">
+                    <a class="page-link" href="#" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                <li :class="'page-item ' + page.is_active" v-for="page in pages" :key="page.number" @click="click_page(page.number)">
+                    <a class="page-link" href="#">{{ page.number }}</a>
+                </li>
+                <li class="page-item" @click="click_page(-1)">
+                    <a class="page-link" href="#" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
 </template>
 
 <script>
@@ -301,6 +355,62 @@ export default {
                 label: "Go",
             }
         ];
+
+        let gym_submissons = ref([]);
+        let current_page = 1;
+        let pages = ref([]);
+        let total_gym_submissions = 0;
+
+        const click_page = page => {
+            if (page === -2) page = current_page - 1;
+            else if (page === -1) page = current_page + 1;
+            let max_pages = parseInt(Math.ceil(total_gym_submissions / 15));
+            if (page >= 1 && page <= max_pages) {
+                refresh_gym_submissions(page);
+            }
+        }
+
+        const update_pages = () => {
+            let max_pages = parseInt(Math.ceil(total_gym_submissions / 15));
+            let new_pages = [];
+            for (let i = current_page - 2; i <= current_page + 2; i ++ ) {
+                if (i >= 1 && i <= max_pages) {
+                    new_pages.push({
+                        number: i,
+                        is_active: i === current_page ? "active" : "",
+                    });
+                }
+            }
+            pages.value = new_pages;
+        };
+
+        const refresh_gym_submissions = page => {
+            let jwt_token = store.state.user.token;
+            if (jwt_token !== '') {
+                current_page = page;
+                $.ajax({
+                    url: "http://localhost:3020/getGymSubmissions/",
+                    type: "get",
+                    data: {
+                        page,
+                    },
+                    headers: {
+                        Authorization: "Bearer " + store.state.user.token,
+                    },
+                    success(resp) {
+                        gym_submissons.value = resp.gymSubmissions;
+                        total_gym_submissions = resp.count;
+                        update_pages();
+                    }
+                });
+            }
+        };
+
+        refresh_gym_submissions(current_page);
+
+        const to_my_gym_submissions = () => {
+            now_show.value = "my_gym_submissions";
+        };
 
         const to_topic_info = id => {
             topic_id.value = id;
@@ -599,6 +709,11 @@ export default {
             user_output_example,
             code_running_status,
             to_debug,
+            to_my_gym_submissions,
+            gym_submissons,
+            current_page,
+            pages,
+            click_page,
         }
     }
 }

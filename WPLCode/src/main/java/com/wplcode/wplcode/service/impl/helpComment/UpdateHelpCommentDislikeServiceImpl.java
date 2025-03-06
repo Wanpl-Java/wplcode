@@ -31,8 +31,10 @@ public class UpdateHelpCommentDislikeServiceImpl implements UpdateHelpCommentDis
             String dislikesLst = helpComment.getDislikesLst();
             String[] split = dislikesLst.split(",");
             StringBuilder res = new StringBuilder();
-            for (int i = 0; i < split.length - 1; i ++ ) {
-                res.append(split[i]).append(",");
+            for (String s : split) {
+                if (!s.equals(Integer.toString(user.getId()))) {
+                    res.append(s).append(",");
+                }
             }
             helpCommentMapper.updateDislikesLst(res.toString(), commentId);
         }
