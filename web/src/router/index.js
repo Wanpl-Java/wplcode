@@ -18,6 +18,8 @@ import OfficialContestIndexView from '../views/OfficialContestIndexView.vue'
 import AllSubmissionsIndexView from '../views/AllSubmissionsIndexView.vue'
 import TestIndexView from '../utils/TestIndexView.vue'
 import TalksIndexView from '../views/TalksIndexView.vue'
+import AiSquareIndexView from '../views/AiSquareIndexView.vue'
+import PluginsIndexView from '../views/PluginsIndexView.vue'
 
 const routes = [
   {
@@ -176,6 +178,22 @@ const routes = [
     path: "/talks/",
     name: "talks_index",
     component: TalksIndexView,
+    meta: {
+      requestAuth: true,
+    }
+  },
+  {
+    path: "/aiSquare/",
+    name: "ai_square_index",
+    component: AiSquareIndexView,
+    meta: {
+      requestAuth: true,
+    }
+  },
+  {
+    path: "/plugins/",
+    name: "plugins_index",
+    component: PluginsIndexView,
     meta: {
       requestAuth: true,
     }

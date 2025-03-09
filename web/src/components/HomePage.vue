@@ -4,14 +4,23 @@
         <div class="row">
             <div class="col-8">
                 <div class="flex-container" style="margin-top: 10px;">
-                    <img src="../assets/logo.png" style="width: 80px; margin-left: 95px; margin-top: 10px;">
-                    <div style="font-family: '黑体'; font-size: 32px; margin-top: 10px; font-weight: 600;">
+                    <img src="../assets/icon25.png" style="width: 80px; margin-left: 95px; margin-top: 10px;">
+                    <div v-if="route_name !== 'plugins_index'" style="font-family: '黑体'; font-size: 32px; margin-top: 10px; font-weight: 600; margin-left: 8px;">
                         W
                     </div>
-                    <div style="font-family: '黑体'; font-size: 32px; margin-top: 10px; margin-left: 5px; font-weight: 600;">
+                    <div v-else-if="route_name === 'plugins_index'" style="color: white; font-family: '黑体'; font-size: 32px; margin-top: 10px; font-weight: 600; margin-left: 8px;">
+                        W
+                    </div>
+                    <div v-if="route_name !== 'plugins_index'" style="font-family: '黑体'; font-size: 32px; margin-top: 10px; margin-left: 5px; font-weight: 600;">
                         P
                     </div>
-                    <div style="font-family: '黑体'; font-size: 32px; margin-top: 10px; margin-left: 5px; font-weight: 600;">
+                    <div v-else-if="route_name === 'plugins_index'" style="color: white; font-family: '黑体'; font-size: 32px; margin-top: 10px; margin-left: 5px; font-weight: 600;">
+                        P
+                    </div>
+                    <div v-if="route_name !== 'plugins_index'" style="font-family: '黑体'; font-size: 32px; margin-top: 10px; margin-left: 5px; font-weight: 600;">
+                        L
+                    </div>
+                    <div v-else-if="route_name === 'plugins_index'" style="color: white; font-family: '黑体'; font-size: 32px; margin-top: 10px; margin-left: 5px; font-weight: 600;">
                         L
                     </div>
                     <div style="font-family: '黑体'; font-size: 32px; margin-top: 10px; margin-left: 5px; font-weight: 600; color: #6666FF;">
@@ -38,14 +47,20 @@
                     </div>
                 </div>
                 <div v-if="jwt_token === null" class="flex-container" style="margin-top: 15px; float: right;">
-                    <a href="javascript:void(0)" @click="to_login" style="color: #0000CC;">Enter</a>
-                    <div style="color: #0000CC;">&nbsp;|&nbsp;</div>
-                    <a href="javascript:void(0)" @click="to_register" style="color: #0000CC;">Register</a>
+                    <a v-if="route_name !== 'plugins_index'" href="javascript:void(0)" @click="to_login" style="color: #0000CC;">Enter</a>
+                    <a v-else-if="route_name === 'plugins_index'" href="javascript:void(0)" @click="to_login" style="color: white;">Enter</a>
+                    <div v-if="route_name !== 'plugins_index'" style="color: #0000CC;">&nbsp;|&nbsp;</div>
+                    <div v-else-if="route_name === 'plugins_index'" style="color: white;">&nbsp;|&nbsp;</div>
+                    <a v-if="route_name !== 'plugins_index'" href="javascript:void(0)" @click="to_register" style="color: #0000CC;">Register</a>
+                    <a v-else-if="route_name === 'plugins_index'" href="javascript:void(0)" @click="to_register" style="color: white;">Register</a>
                 </div>
                 <div v-else-if="jwt_token !== null" class="flex-container" style="margin-top: 15px; float: right;">
-                    <a href="javascript:void(0)" @click="to_profile(username);" style="color: #0000CC;">{{ username }}</a>
-                    <div style="color: #0000CC;">&nbsp;|&nbsp;</div>
-                    <a href="javascript:void(0)" @click="logout" style="color: #0000CC;">Logout</a>
+                    <a v-if="route_name !== 'plugins_index'" href="javascript:void(0)" @click="to_profile(username);" style="color: #0000CC;">{{ username }}</a>
+                    <a v-else-if="route_name === 'plugins_index'" href="javascript:void(0)" @click="to_profile(username);" style="color: white;">{{ username }}</a>
+                    <div v-if="route_name !== 'plugins_index'" style="color: #0000CC;">&nbsp;|&nbsp;</div>
+                    <div v-else-if="route_name === 'plugins_index'" style="color: white;">&nbsp;|&nbsp;</div>
+                    <a v-if="route_name !== 'plugins_index'" href="javascript:void(0)" @click="logout" style="color: #0000CC;">Logout</a>
+                    <a v-else-if="route_name === 'plugins_index'" href="javascript:void(0)" @click="logout" style="color: white;">Logout</a>
                 </div>
             </div>
             <div class="col-1">
@@ -59,7 +74,7 @@
 
             </div>
             <div class="col-10">
-                <nav class="navbar navbar-expand-lg bg-body-tertiary" style="border: 1px solid black; border-radius: 10px;">
+                <nav v-if="route_name !== 'plugins_index'" class="navbar navbar-expand-lg bg-body-tertiary" style="border: 1px solid black; border-radius: 10px;">
                     <div class="container-fluid">
                         <div class="collapse navbar-collapse" id="navbarNav">
                             <ul class="navbar-nav">
@@ -91,8 +106,61 @@
                                     <a v-if="route_name === 'game_index'" class="nav-link" href="javascript:void(0)" style="text-decoration: underline;" @click="to_game">GAME</a>
                                     <a v-else-if="route_name !== 'game_index'" class="nav-link" href="javascript:void(0)" @click="to_game">GAME</a>
                                 </li>
+                                <li class="nav-item">
+                                    <a v-if="route_name === 'ai_square_index'" class="nav-link" href="javascript:void(0)" style="text-decoration: underline;" @click="to_ai_square();">AI</a>
+                                    <a v-else-if="route_name !== 'ai_square_index'" class="nav-link" href="javascript:void(0)" @click="to_ai_square();">AI</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a v-if="route_name === 'plugins_index'" class="nav-link" href="javascript:void(0)" style="text-decoration: underline;" @click="to_plugins();">PLUGINS</a>
+                                    <a v-else-if="route_name !== 'plugins_index'" class="nav-link" href="javascript:void(0)" @click="to_plugins();">PLUGINS</a>
+                                </li>
                             </ul>
-                            <input class="search" name="query" value="" style="margin-left: 350px;"> 
+                            <input class="search" name="query" value="" style="margin-left: 220px;"> 
+                        </div>
+                    </div>
+                </nav>
+                <nav v-else-if="route_name === 'plugins_index'" class="navbar navbar-expand-lg bg-dark" style="border: 1px solid white; border-radius: 10px;">
+                    <div class="container-fluid">
+                        <div class="collapse navbar-collapse" id="navbarNav">
+                            <ul class="navbar-nav">
+                                <li class="nav-item">
+                                    <a v-if="route_name === 'myhome_index'" class="nav-link active" aria-current="page" href="javascript:void(0)" style="text-decoration: underline; color: white;" @click="to_myhome">HOME</a>
+                                    <a v-else-if="route_name !== 'myhome_index'" class="nav-link active" aria-current="page" href="javascript:void(0)" style="color: white;" @click="to_myhome">HOME</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a v-if="route_name === 'contests_index'" class="nav-link" href="javascript:void(0)" style="text-decoration: underline; color: white;" @click="to_contests">CONTESTS</a>
+                                    <a v-else-if="route_name !== 'contests_index'" class="nav-link" href="javascript:void(0)" style="color: white;" @click="to_contests">CONTESTS</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a v-if="route_name === 'gym_index'" class="nav-link" href="javascript:void(0)" style="text-decoration: underline; color: white;" @click="to_gym">GYM</a>
+                                    <a v-else-if="route_name !== 'gym_index'" class="nav-link" href="javascript:void(0)" style="color: white;" @click="to_gym">GYM</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a v-if="route_name === 'rating_index'" class="nav-link" href="javascript:void(0)" style="text-decoration: underline; color: white;" @click="to_rating">RATING</a>
+                                    <a v-else-if="route_name !== 'rating_index'" class="nav-link" href="javascript:void(0)" style="color: white;" @click="to_rating">RATING</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a v-if="route_name === 'allSubmissions_index'" class="nav-link" href="javascript:void(0)" style="text-decoration: underline; color: white;" @click="to_all_submissions">SUBMISSIONS</a>
+                                    <a v-else-if="route_name !== 'allSubmissions_index'" class="nav-link" href="javascript:void(0)" style="color: white;" @click="to_all_submissions">SUBMISSIONS</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a v-if="route_name === 'help_index'" class="nav-link" href="javascript:void(0)" style="text-decoration: underline; color: white;" @click="to_help">HELP</a>
+                                    <a v-else-if="route_name !== 'help_index'" class="nav-link" href="javascript:void(0)" style="color: white;" @click="to_help">HELP</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a v-if="route_name === 'game_index'" class="nav-link" href="javascript:void(0)" style="text-decoration: underline; color: white;" @click="to_game">GAME</a>
+                                    <a v-else-if="route_name !== 'game_index'" class="nav-link" href="javascript:void(0)" style="color: white;" @click="to_game">GAME</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a v-if="route_name === 'ai_square_index'" class="nav-link" href="javascript:void(0)" style="text-decoration: underline; color: white;" @click="to_ai_square();">AI</a>
+                                    <a v-else-if="route_name !== 'ai_square_index'" class="nav-link" href="javascript:void(0)" style="color: white;" @click="to_ai_square();">AI</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a v-if="route_name === 'plugins_index'" class="nav-link" href="javascript:void(0)" style="text-decoration: underline; color: white;" @click="to_plugins();">PLUGINS</a>
+                                    <a v-else-if="route_name !== 'plugins_index'" class="nav-link" href="javascript:void(0)" style="color: white;" @click="to_plugins();">PLUGINS</a>
+                                </li>
+                            </ul>
+                            <input class="search" name="query" value="" style="margin-left: 220px;"> 
                         </div>
                     </div>
                 </nav>
@@ -110,7 +178,10 @@
             <div class="col-1">
 
             </div>
-            <div class="col-7">
+            <div v-if="route_name === 'plugins_index'" class="col-10">
+                <PluginsIndexView />
+            </div>
+            <div v-if="route_name !== 'plugins_index'" class="col-7">
                 <div v-if="route_name === 'myhome_index'" >
                     <div class="card" style="width: 100%; margin-top: 20px; border: 1px solid black;">
                         <div style="float: left; text-align: left; margin-left: 15px; margin-top: 10px; font-size: 20px; font-weight: 600;">
@@ -175,9 +246,13 @@
                 <div v-else-if="route_name === 'talks_index'">
                     <TalksIndexView />
                 </div>
+                <div v-else-if="route_name === 'ai_square_index'">
+                    <AiSquareIndexView />
+                </div>
             </div>
             <div v-if="route_name === 'myhome_index' || route_name === 'contests_index' || route_name === 'gym_index' || route_name === 'rating_index' || route_name === 'help_index' || route_name === 'game_index' ||
-                       route_name === 'provinceRating_index' || route_name === 'cityRating_index' || route_name === 'settings_index' || route_name === 'profile_index' || route_name === 'talks_index'" class="col-3">
+                       route_name === 'provinceRating_index' || route_name === 'cityRating_index' || route_name === 'settings_index' || route_name === 'profile_index' || route_name === 'talks_index' ||
+                       route_name === 'ai_square_index'" class="col-3">
                 <MyhomeIndexView />
             </div>
             <div v-else-if="route_name === 'standings_index' || 'contest_index'" class="col-3">
@@ -241,6 +316,8 @@ import ContestIndexView from '../views/ContestIndexView.vue'
 import OfficialContestIndexView from '../views/OfficialContestIndexView.vue'
 import AllSubmissionsIndexView from '../views/AllSubmissionsIndexView.vue'
 import TalksIndexView from '../views/TalksIndexView.vue'
+import AiSquareIndexView from '../views/AiSquareIndexView.vue'
+import PluginsIndexView from '../views/PluginsIndexView.vue'
 
 export default {
     components: {
@@ -262,6 +339,8 @@ export default {
         OfficialContestIndexView,
         AllSubmissionsIndexView,
         TalksIndexView,
+        AiSquareIndexView,
+        PluginsIndexView,
     },
     setup() {
         let jwt_token = ref(localStorage.getItem("wplcode_jwt_token"));
@@ -496,6 +575,22 @@ export default {
                 router.push({ name: 'game_index' });
             }, 20);*/
             router.push({ name: 'game_index' });
+            setTimeout(() => {
+                location.reload();
+            }, 10);
+        };
+
+        const to_ai_square = () => {
+            router.push({ name: 'ai_square_index' });
+            setTimeout(() => {
+                location.reload();
+            }, 10);
+        };
+
+        const to_plugins = () => {
+            router.push({
+                name: 'plugins_index',
+            });
             setTimeout(() => {
                 location.reload();
             }, 10);
@@ -844,6 +939,8 @@ export default {
             to_game,
             to_profile,
             to_all_submissions,
+            to_ai_square,
+            to_plugins,
         }
     },
     methods: {

@@ -61,8 +61,8 @@ export default {
                 success(resp) {
                     if (resp.error_message === "success") {
                         localStorage.setItem("wplcode_jwt_token", resp.wplcode_jwt_token);
-                        router.go(-1);
-                        // router.push({ name: 'myhome_index' });
+                        // router.go(-1);
+                        router.push({ name: 'myhome_index' });
                         setTimeout(() => {
                             location.reload();
                         }, 5);
