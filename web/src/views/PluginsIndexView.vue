@@ -26,6 +26,27 @@
                     </div>
                     <div style="justify-content: center; margin-top: 10px;">
                         <el-button @click="start_to_use_open_source_version();" plain style="width: 95%; font-weight: 600; font-size: 18px;">Start to use</el-button>
+                        <el-dialog v-model="open_source_version_DialogVisble" width="360" center style="margin-top: 200px;">
+                            <div style="font-weight: 600; text-align: center; font-size: 22px;">
+                                English→Chinese
+                            </div>
+                            <div style="text-align: center; margin-top: 10px; font-size: 20px; font-family: '隶书';">
+                                English
+                            </div>
+                            <div class="flex-container" style="justify-content: center; margin-top: 5px;">
+                                <el-input v-model="userInput" style="width: 300px" placeholder="Please input(English)..." />
+                            </div>
+                            <hr>
+                            <div style="text-align: center; font-size: 20px; font-family: '隶书';">
+                                Chinese
+                            </div>
+                            <div class="flex-container" style="justify-content: center; margin-top: 5px;">
+                                <el-input v-model="chinese_output" style="width: 300px" />
+                            </div>
+                            <div class="flex-container" style="justify-content: center; margin-top: 15px;">
+                                <el-button @click="open_source_version_translate();" type="primary">{{ translate_btn_content }}</el-button>
+                            </div>
+                        </el-dialog>
                     </div>
                     <hr>
                     <div class="flex-container" style="justify-content: left; margin-left: 20px;">
@@ -176,25 +197,54 @@
 
 <script>
 import axios from "axios"
+import { ref } from 'vue'
 
 export default {
+    watch: {
+        open_source_version_DialogVisble(New) {
+            if (New === false) {
+                setTimeout(() => {
+                    this.userInput = "";
+                    this.chinese_output = "";                    
+                }, 50);
+            }
+        }
+    },
     setup() {
-        let django_info = "";
+        let django_info = 'hello';
+        let userInput = ref(""); // 接收用户的英文输入
+        let chinese_output = ref(""); // 返回翻译后的中文
 
-        const test_django_info = () => {
-            axios.get('http://127.0.0.1:3050/blog/hello_world')
+        let open_source_version_DialogVisble = ref(false);
+        let wplcode_commercial_version_DialogVisble = ref(false);
+
+        let translate_btn_content = ref("Translate");
+
+        const open_source_version_translate = () => {
+            translate_btn_content.value = "is thinking...";
+            let whole_url = 'http://127.0.0.1:3050/translate/' + userInput.value;
+            axios.get(whole_url)
             .then(res => {
-                django_info = res.data;
+                chinese_output.value = res.data;
+                translate_btn_content.value = "Translate";
                 // console.log(res);
             })
             .catch(err => {
-                console.log(err);
+                alert("ERROR!");
+                console.log(err); 
+                translate_btn_content.value = "Translate";
             })
+        };
+
+        const wplcode_commercial_version_translate = () => {
+
         };
 
         // 使用开源版本
         const start_to_use_open_source_version = () => {
-            alert("start to use open source version!");
+            open_source_version_DialogVisble.value = true;
+            // test_django_info();
+            // alert("start to use open source version!");
         };
 
         // 使用WPLCode商业版
@@ -204,9 +254,15 @@ export default {
 
         return {
             django_info,
-            test_django_info,
+            open_source_version_translate,
+            wplcode_commercial_version_translate,
             start_to_use_open_source_version,
             start_to_use_wplcode_commercial_version,
+            open_source_version_DialogVisble,
+            wplcode_commercial_version_DialogVisble,
+            userInput,
+            chinese_output,
+            translate_btn_content,
         }
     }
 }
